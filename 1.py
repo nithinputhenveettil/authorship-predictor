@@ -5,6 +5,7 @@ import os
 new_autho=[]
 
 
+
 class main_window(wx.Frame) :
 	def __init__(self,parent,id) :
 		wx.Frame.__init__(self,parent,id,'',size=(500,500),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
