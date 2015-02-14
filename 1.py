@@ -110,20 +110,32 @@ class about_window(wx.Frame) :
 
 class training_window(wx.Frame) :
 	def __init__(self,parent,id) :
+		self.author_list=[]
+		self.novel_list=[]
 		self.numberOfAuthors=0
 		self.authors=[]
-		wx.Frame.__init__(self,parent,id,'Training..!!!!!',size=(400,300),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
+		wx.Frame.__init__(self,parent,id,'Training..!!!!!',size=(600,600),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
 		self.panel=wx.Panel(self)
 		self.panel.SetBackgroundColour(wx.Colour(220,220,250))
 		font1 = wx.Font(10, wx.DEFAULT, wx.NORMAL,wx.FONTWEIGHT_NORMAL)
 		font1.SetPointSize(12)
-		add_author_button=wx.Button(self.panel,label="Add New Author",pos=(80,90),size=(200,30))
+		add_author_button=wx.Button(self.panel,label="Add New Author",pos=(190,90),size=(200,30))
 		add_author_button.SetFont(font1)
 		self.Bind(wx.EVT_BUTTON, self.show_add_author, add_author_button)
-		start_training_button=wx.Button(self.panel,label="Start Training",pos=(40,150),size=(300,50))
+		self.authorNameText=wx.StaticText(self.panel,-1,"Author Name\t : ",pos=(20,150),size=(30,50))
+		self.authorNameText.SetFont(font1)
+		self.authorNameChoices=wx.Choice(self.panel,-1,pos=(155,150),size=(290,30),choices=self.author_list)
+		self.authorNameChoices.SetSelection(0)
+		self.novelNameText=wx.StaticText(self.panel,-1,"Novel Name\t : ",pos=(20,200),size=(30,50))
+		self.novelNameText.SetFont(font1)
+		self.novelNameChoices=wx.Choice(self.panel,-1,pos=(155,200),size=(290,30))
+		self.novelNameChoices.SetSelection(0)
+		self.novelPrev=wx.TextCtrl(self.panel,-1,"",pos=(50,260),size=(500,200),style=wx.TE_READONLY)
+		self.novelPrev.SetInsertionPoint(0)
+		start_training_button=wx.Button(self.panel,label="Start Training",pos=(150,500),size=(300,40))
 		start_training_button.SetFont(font1)
 		self.Bind(wx.EVT_BUTTON, self.start_training_dialog, start_training_button)
-		self.numberAuthors=wx.StaticText(self.panel,-1,"Number Of Authors Selected : "+str(self.numberOfAuthors),(10,30),(360,-1),wx.ALIGN_CENTER)
+		self.numberAuthors=wx.StaticText(self.panel,-1,"Number Of Authors Selected : "+str(self.numberOfAuthors),(120,30),(360,-1),wx.ALIGN_CENTER)
 		font = wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.BOLD)
 		font.SetPointSize(15)
 		self.numberAuthors.SetFont(font)
@@ -153,6 +165,14 @@ class training_window(wx.Frame) :
 			if len(new_autho)>=3 and len(new_autho[-1])>0 :
 				self.numberOfAuthors+=1
 				self.authors.append(new_autho)
+				#print new_autho[0::-1]
+				self.novel_list.append(new_autho[1:-1])
+				self.author_list.append(new_autho[-1])
+				self.authorNameChoices.SetItems(self.author_list)
+				self.authorNameChoices.SetSelection(0)
+				#print self.novel_list
+				self.novelNameChoices.SetItems(self.novel_list[self.authorNameChoices.GetSelection()])
+				self.novelNameChoices.SetSelection(0)
 				self.Refresh()
 			self.new_author_frame.Destroy()
 			self.numberAuthors.SetLabel("Number Of Authors Selected : "+str(self.numberOfAuthors))
