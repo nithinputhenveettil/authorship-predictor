@@ -131,6 +131,8 @@ class training_window(wx.Frame) :
 		self.novelNameChoices.SetSelection(0)
 		self.novelPrev=wx.TextCtrl(self.panel,-1,"",pos=(50,260),size=(500,200),style=wx.TE_MULTILINE)
 		self.novelPrev.SetInsertionPoint(0)
+		self.Bind(wx.EVT_CHOICE, self.set_new_author_novel_preview, self.authorNameChoices)
+		self.Bind(wx.EVT_CHOICE, self.set_new_novel_preview, self.novelNameChoices)
 		start_training_button=wx.Button(self.panel,label="Start Training",pos=(150,500),size=(300,40))
 		start_training_button.SetFont(font1)
 		self.Bind(wx.EVT_BUTTON, self.start_training_dialog, start_training_button)
@@ -140,6 +142,23 @@ class training_window(wx.Frame) :
 		self.numberAuthors.SetFont(font)
 		self.Bind(wx.EVT_CLOSE, self.close_all)
 
+	def set_new_author_novel_preview(self,event) :
+		self.novelNameChoices.SetItems(self.novel_list[self.authorNameChoices.GetSelection()])
+		self.novelNameChoices.SetSelection(0)
+		file1 = self.authors[self.authorNameChoices.GetSelection()][0]+"/"+self.authors[self.authorNameChoices.GetSelection()][1+self.novelNameChoices.GetSelection()]
+		#print file1
+		text1 = open(file1,"r").read()
+		#print text1
+		self.novelPrev.SetValue(text1)			
+		self.Refresh()
+
+	def set_new_novel_preview(self,event) :
+		file1 = self.authors[self.authorNameChoices.GetSelection()][0]+"/"+self.authors[self.authorNameChoices.GetSelection()][1+self.novelNameChoices.GetSelection()]
+		#print file1
+		text1 = open(file1,"r").read()
+		#print text1
+		self.novelPrev.SetValue(text1)			
+		self.Refresh()
 
 	def close_all(self,event) :
 		try :
