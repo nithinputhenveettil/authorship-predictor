@@ -5,7 +5,6 @@ import os
 new_autho=[]
 
 
-
 class main_window(wx.Frame) :
 	def __init__(self,parent,id) :
 		wx.Frame.__init__(self,parent,id,'',size=(500,500),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
@@ -130,7 +129,7 @@ class training_window(wx.Frame) :
 		self.novelNameText.SetFont(font1)
 		self.novelNameChoices=wx.Choice(self.panel,-1,pos=(155,200),size=(290,30))
 		self.novelNameChoices.SetSelection(0)
-		self.novelPrev=wx.TextCtrl(self.panel,-1,"",pos=(50,260),size=(500,200),style=wx.TE_READONLY)
+		self.novelPrev=wx.TextCtrl(self.panel,-1,"",pos=(50,260),size=(500,200),style=wx.TE_MULTILINE)
 		self.novelPrev.SetInsertionPoint(0)
 		start_training_button=wx.Button(self.panel,label="Start Training",pos=(150,500),size=(300,40))
 		start_training_button.SetFont(font1)
@@ -173,6 +172,11 @@ class training_window(wx.Frame) :
 				#print self.novel_list
 				self.novelNameChoices.SetItems(self.novel_list[self.authorNameChoices.GetSelection()])
 				self.novelNameChoices.SetSelection(0)
+				file1 = self.authors[self.authorNameChoices.GetSelection()][0]+"/"+self.authors[self.authorNameChoices.GetSelection()][1+self.novelNameChoices.GetSelection()]
+				#print file1
+				text1 = open(file1,"r").read()
+				#print text1
+				self.novelPrev.SetValue(text1)			
 				self.Refresh()
 			self.new_author_frame.Destroy()
 			self.numberAuthors.SetLabel("Number Of Authors Selected : "+str(self.numberOfAuthors))
