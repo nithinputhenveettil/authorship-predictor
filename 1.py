@@ -9,6 +9,7 @@ new_autho = []
 docss = []
 author_list = []
 novel_list = [[]]
+path = os.path.dirname(os.path.realpath(sys.argv[0]))
 
 
 
@@ -352,18 +353,56 @@ class training_window(wx.Frame) :
 			self.novelNameChoices.SetSelection(0)
 			self.novelPrev=wx.TextCtrl(self.panel,-1,self.features_list[0][0],pos=(50,130),size=(500,200),style=wx.TE_MULTILINE)
 			self.novelPrev.SetInsertionPoint(0)
-			#self.Bind(wx.EVT_CHOICE, self.set_new_author_novel_preview, self.authorNameChoices)
-			#self.Bind(wx.EVT_CHOICE, self.set_new_novel_preview, self.novelNameChoices)
+			self.Bind(wx.EVT_CHOICE, self.set_new_author_features_preview, self.authorNameChoices)
+			self.Bind(wx.EVT_CHOICE, self.set_new_novel_features_preview, self.novelNameChoices)
 			start_training_button=wx.Button(self.panel,label="Start Training",pos=(300,370),size=(200,40))
 			start_training_button.SetFont(font1)
 			save_features_button=wx.Button(self.panel,label="Save Features",pos=(70,370),size=(190,40))
 			save_features_button.SetFont(font1)
-			#self.Bind(wx.EVT_BUTTON, self.start_extract_features_dialog, start_training_button)
+			self.Bind(wx.EVT_BUTTON, self.save_features_as_a_file, save_features_button)
 			font = wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.BOLD)
 			font.SetPointSize(15)
 			#self.numberAuthors.SetFont(font)
 			#self.Bind(wx.EVT_CLOSE, self.close_all)
 			#print self.authors
+		
+		def save_features_as_a_file(self,event) :
+			global path
+			try :
+				os.mkdir(path+"/Features")
+			except :
+				pass
+			for doc in self.docs :
+				#print doc.full_features
+				#print os.path.dirname(os.path.abspath(os.__file__))
+				#print os.path.dirname(os.path.realpath(os.__file__))
+				#print os.path.dirname(os.path.realpath(sys.argv[0]))
+				#print os.getcwd()
+				try :
+					os.mkdir(path+"/Features/"+doc.authorname)
+				except :
+					pass
+				#print path+"/output/"+doc.authorname+"/"+doc.docname
+				file1 = open(path+"/Features/"+doc.authorname+"/"+doc.docname,"w")
+				file1.write(doc.full_features)
+				file1.close()
+			box=wx.MessageDialog(None,"Features saved in a folder named Features.",'Alert',wx.OK)
+			answer=box.ShowModal()
+			box.Destroy()
+			
+
+				
+		
+		def set_new_author_features_preview(self,event) :
+			self.novelNameChoices.SetItems(self.novel_list[self.authorNameChoices.GetSelection()])
+			self.novelNameChoices.SetSelection(0)
+			self.novelPrev.SetValue(self.features_list[self.authorNameChoices.GetSelection()][0])			
+			self.Refresh()
+
+		def set_new_novel_features_preview(self,event) :
+			self.novelPrev.SetValue(self.features_list[self.authorNameChoices.GetSelection()][self.novelNameChoices.GetSelection()])			
+			self.Refresh()
+
 
 		def close_all(self,event) :
 			try :
@@ -529,7 +568,14 @@ class features() :
 		for i in self.type_token_ratio :
 			file1.writelines(str(i)+"\n")
 
-
+	def create_csv_file(self) :
+		global path
+		try :
+			os.mkdir(path+"/generated_files")
+		except :
+			pass
+		file1 = open(path+"/generated_files/"+self.authorname+".csv","a+")
+		#file1.write(self.authorname)
 
 	def extract_features(self) :
 		self.full_features = "----Features-----\n\n"
@@ -547,7 +593,7 @@ class features() :
 				count2=0
 		self.full_features += "Number of comas per thousand tokens = "
 		self.full_features += str(self.number_comas)
-		self.full_features += "\n"
+		self.full_features += "\n\n"
 		#print self.number_comas
 
 		## Number of semicolons per thousand tokens
@@ -564,7 +610,7 @@ class features() :
 				count2=0
 		self.full_features += "Number of semicolons per thousand tokens = "
 		self.full_features += str(self.number_semicolans)
-		self.full_features += "\n"
+		self.full_features += "\n\n"
 		#print self.number_semicolans
 
 		## Number of quotation marks per thousand tokens
@@ -581,7 +627,7 @@ class features() :
 				count2=0
 		self.full_features += "Number of quotation marks per thousand tokens = "
 		self.full_features += str(self.number_quotations)
-		self.full_features += "\n"
+		self.full_features += "\n\n"
 		#print self.number_quotations
 
 		## Number of exclamation marks per thousand tokens
@@ -598,7 +644,7 @@ class features() :
 				count2=0
 		self.full_features += "Number of exclamation marks per thousand tokens = "
 		self.full_features += str(self.number_exclamations)
-		self.full_features += "\n"
+		self.full_features += "\n\n"
 		#print self.number_exclamations
 
 		## Number of hyphens per thousand tokens
@@ -615,7 +661,7 @@ class features() :
 				count2=0
 		self.full_features += "Number of hyphens per thousand tokens = "
 		self.full_features += str(self.number_hyphens)
-		self.full_features += "\n"
+		self.full_features += "\n\n"
 		#print self.number_hyphens
 
 		## Number of ands per thousand tokens
@@ -632,7 +678,7 @@ class features() :
 				count2=0
 		self.full_features += "Number of ands per thousand tokens = "
 		self.full_features += str(self.number_ands)
-		self.full_features += "\n"
+		self.full_features += "\n\n"
 		#print self.number_ands
 
 		## Number of buts per thousand tokens
@@ -649,7 +695,7 @@ class features() :
 				count2=0
 		self.full_features += "Number of buts per thousand tokens = "
 		self.full_features += str(self.number_buts)
-		self.full_features += "\n"
+		self.full_features += "\n\n"
 		#print self.number_buts
 
 		## Number of howevers per thousand tokens
@@ -666,7 +712,7 @@ class features() :
 				count2=0
 		self.full_features += "Number of howevers per thousand tokens = "
 		self.full_features += str(self.number_howevers)
-		self.full_features += "\n"
+		self.full_features += "\n\n"
 		#print self.number_howevers
 
 		## Number of ifs per thousand tokens
@@ -683,7 +729,7 @@ class features() :
 				count2=0
 		self.full_features += "Number of ifs per thousand tokens = "
 		self.full_features += str(self.number_ifs)
-		self.full_features += "\n"
+		self.full_features += "\n\n"
 		#print self.number_ifs
 
 		## Number of thats per thousand tokens
@@ -700,7 +746,7 @@ class features() :
 				count2=0
 		self.full_features += "Number of thats per thousand tokens = "
 		self.full_features += str(self.number_thats)
-		self.full_features += "\n"
+		self.full_features += "\n\n"
 		#print self.number_thats
 
 		## Number of mores per thousand tokens
@@ -717,7 +763,7 @@ class features() :
 				count2=0
 		self.full_features += "Number of mores per thousand tokens = "
 		self.full_features += str(self.number_mores)
-		self.full_features += "\n"
+		self.full_features += "\n\n"
 		#print self.number_mores
 
 		## Number of musts per thousand tokens
@@ -734,7 +780,7 @@ class features() :
 				count2=0
 		self.full_features += "Number of musts per thousand tokens = "
 		self.full_features += str(self.number_musts)
-		self.full_features += "\n"
+		self.full_features += "\n\n"
 		#print self.number_musts
 
 		## Number of mights per thousand tokens
@@ -751,7 +797,7 @@ class features() :
 				count2=0
 		self.full_features += "Number of mights per thousand tokens = "
 		self.full_features += str(self.number_mights)
-		self.full_features += "\n"
+		self.full_features += "\n\n"
 		#print self.number_mights
 
 		## Number of thiss per thousand tokens
@@ -768,7 +814,7 @@ class features() :
 				count2=0
 		self.full_features += "Number of thiss per thousand tokens = "
 		self.full_features += str(self.number_thiss)
-		self.full_features += "\n"
+		self.full_features += "\n\n"
 		#print self.number_thiss
 
 		## Number of verys per thousand tokens
@@ -785,7 +831,7 @@ class features() :
 				count2=0
 		self.full_features += "Number of verys per thousand tokens = "
 		self.full_features += str(self.number_verys)
-		self.full_features += "\n"
+		self.full_features += "\n\n"
 		#print self.number_verys
 
 		## Type-Token Ratio
@@ -828,7 +874,7 @@ class features() :
 		for i in self.type_token_ratio :
 			self.full_features += str(i)
 			self.full_features += "\n"
-		self.full_features += "\n"
+		self.full_features += "\n\n"
 
 		## Mean word length
 		data = str(self.data)
@@ -849,7 +895,7 @@ class features() :
 		self.mean_word_length = float(float(count1)/float(count2))
 		self.full_features += "Mean word length = "
 		self.full_features += str(self.mean_word_length)
-		self.full_features += "\n"
+		self.full_features += "\n\n"
 
 		## Mean Sentence Length
 		data = str(self.data)
@@ -870,7 +916,7 @@ class features() :
 		self.mean_sentence_length = float(float(count1)/float(count2))
 		self.full_features += "Mean Sentence length = "
 		self.full_features += str(self.mean_sentence_length)
-		self.full_features += "\n"
+		self.full_features += "\n\n"
 
 		## Standard Deviation of Sentence Length
 		count1=0
@@ -883,8 +929,10 @@ class features() :
 		self.standard_deviation_sentence =  math.sqrt(float(float(count1)/(float(count2))))
 		self.full_features += "Standard Deviation of Sentence Length = "
 		self.full_features += str(self.standard_deviation_sentence)
-		self.full_features += "\n"
+		self.full_features += "\n\n"
 		#print self.full_features
+		print "Features of ",self.docname," is extracted."
+		self.create_csv_file()
 
 
 
@@ -902,4 +950,4 @@ def main() :
 
 
 if __name__ == '__main__' :
-	main()
+	main()	
