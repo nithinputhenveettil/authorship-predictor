@@ -1,8 +1,11 @@
 import wx
 import os
+import sys
+import nltk
+import math
 
-
-new_autho=[]
+new_autho = []
+docss = []
 
 
 class main_window(wx.Frame) :
@@ -108,6 +111,7 @@ class about_window(wx.Frame) :
 
 
 class training_window(wx.Frame) :
+	global docss
 	def __init__(self,parent,id) :
 		self.author_list=[]
 		self.novel_list=[]
@@ -153,9 +157,16 @@ class training_window(wx.Frame) :
 		self.Refresh()
 
 	def show_features_window(self) :
+		global docss
 		try :
 			tmp=self.show_features_frame.GetSize()
 		except :
+			self.docs = []
+			for auth in self.authors :
+				for doc in auth[1:-1] :
+					#print doc
+					self.docs.append(features(doc,auth[-1],auth[0]))
+			docss = self.docs
 			self.show_features_frame=self.training_window1(parent=None,id=1)
 			self.show_features_frame.Show()
 			#self.show_features_frame.Bind(wx.EVT_CLOSE, self.add_new_author,self.new_author_frame)
@@ -215,6 +226,8 @@ class training_window(wx.Frame) :
 
 
 	def start_extract_features_dialog(self,event) :
+		self.show_features_window()
+		"""
 		if self.numberOfAuthors==0 :
 			box=wx.MessageDialog(None,"Please input atleast one author details..!!!",'Alert',wx.OK)
 			answer=box.ShowModal()
@@ -231,6 +244,7 @@ class training_window(wx.Frame) :
 				#answer=box.ShowModal()
 				#box.Destroy()
 				self.show_features_window()
+		"""
 
 
 
@@ -289,11 +303,15 @@ class training_window(wx.Frame) :
 
 
 	class training_window1(wx.Frame) :
+		global docss
 		def __init__(self,parent,id) :
+			global docss
+			self.docs = docss
+			for doc in self.docs :
+				doc.extract_features()
 			self.author_list=[]
 			self.novel_list=[]
 			self.numberOfAuthors=0
-			self.authors=[]
 			wx.Frame.__init__(self,parent,id,'Training..!!!!!',size=(600,450),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
 			self.panel=wx.Panel(self)
 			self.panel.SetBackgroundColour(wx.Colour(220,220,250))
@@ -311,13 +329,16 @@ class training_window(wx.Frame) :
 			self.novelPrev.SetInsertionPoint(0)
 			#self.Bind(wx.EVT_CHOICE, self.set_new_author_novel_preview, self.authorNameChoices)
 			#self.Bind(wx.EVT_CHOICE, self.set_new_novel_preview, self.novelNameChoices)
-			start_training_button=wx.Button(self.panel,label="Start Training",pos=(150,370),size=(300,40))
+			start_training_button=wx.Button(self.panel,label="Start Training",pos=(300,370),size=(200,40))
 			start_training_button.SetFont(font1)
+			save_features_button=wx.Button(self.panel,label="Save Features",pos=(70,370),size=(190,40))
+			save_features_button.SetFont(font1)
 			#self.Bind(wx.EVT_BUTTON, self.start_extract_features_dialog, start_training_button)
 			font = wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.BOLD)
 			font.SetPointSize(15)
 			#self.numberAuthors.SetFont(font)
 			#self.Bind(wx.EVT_CLOSE, self.close_all)
+			#print self.authors
 
 		def close_all(self,event) :
 			try :
@@ -422,6 +443,425 @@ class testing_window(wx.Frame) :
 			self.novel1.append(open_dlg.GetDirectory())
 			self.novel1.append(open_dlg.GetFilename())
 			self.novelText.SetValue(novels)
+
+
+
+
+class features() :
+	def __init__(self,docnamee,authornamee,pathh) :
+		self.docname = docnamee
+		self.authorname = authornamee
+		self.path = pathh
+		
+		self.file1 = open(self.path+"/"+self.docname,"r")
+		self.data = self.file1.read().replace("\n"," ").lower()
+		self.tokenized_data = nltk.tokenize.word_tokenize(self.data)
+
+	def print_content(self) :
+		print self.tokenized_data
+		#print self.data
+
+	def output_features(self) :
+		file1 = open("./output/"+self.name,"w")
+		file1.writelines("----Features-----\n\n")
+		file1.writelines("\nNumber of comas per thousand tokens = ")
+		file1.writelines(str(self.number_comas))
+		file1.writelines("\nNumber of semicolons per thousand tokens = ")
+		file1.writelines(str(self.number_semicolans))
+		file1.writelines("\nNumber of quotations per thousand tokens = ")
+		file1.writelines(str(self.number_quotations))
+		file1.writelines("\nNumber of exclamations per thousand tokens = ")
+		file1.writelines(str(self.number_exclamations))
+		file1.writelines("\nNumber of hyphens per thousand tokens = ")
+		file1.writelines(str(self.number_hyphens))
+		file1.writelines("\nNumber of ands per thousand tokens = ")
+		file1.writelines(str(self.number_ands))
+		file1.writelines("\nNumber of buts per thousand tokens = ")
+		file1.writelines(str(self.number_buts))
+		file1.writelines("\nNumber of howevers per thousand tokens = ")
+		file1.writelines(str(self.number_howevers))
+		file1.writelines("\nNumber of ifs per thousand tokens = ")
+		file1.writelines(str(self.number_ifs))
+		file1.writelines("\nNumber of thats per thousand tokens = ")
+		file1.writelines(str(self.number_thats))
+		file1.writelines("\nNumber of mores per thousand tokens = ")
+		file1.writelines(str(self.number_mores))
+		file1.writelines("\nNumber of musts per thousand tokens = ")
+		file1.writelines(str(self.number_musts))
+		file1.writelines("\nNumber of mights per thousand tokens = ")
+		file1.writelines(str(self.number_mights))
+		file1.writelines("\nNumber of thiss per thousand tokens = ")
+		file1.writelines(str(self.number_thiss))
+		file1.writelines("\nNumber of verys per thousand tokens =")
+		file1.writelines(str(self.number_verys))
+		file1.writelines("\n\nMean Word Length = ")
+		file1.writelines(str(self.mean_word_length))
+		file1.writelines("\nMean Sentence Length = ")
+		file1.writelines(str(self.mean_sentence_length))
+		file1.writelines("\nStandard deviation of Sentence Length = ")
+		file1.writelines(str(self.standard_deviation_sentence))
+		file1.writelines("\n\nType Token Ratio \n------------------------\n")
+		for i in self.type_token_ratio :
+			file1.writelines(str(i)+"\n")
+
+
+
+	def extract_features(self) :
+		self.full_features = "----Features-----\n\n"
+		## Number of comas per thousand tokens
+		self.number_comas = []
+		count1 = 0
+		count2 = 0
+		for token in self.tokenized_data :
+			count1 += 1
+			if token == ',' :
+				count2 += 1
+			if count1 == 1000 :
+				self.number_comas.append(count2)
+				count1=0
+				count2=0
+		self.full_features += "Number of comas per thousand tokens : "
+		self.full_features += str(self.number_comas)
+		self.full_features += "\n"
+		#print self.number_comas
+
+		## Number of semicolons per thousand tokens
+		self.number_semicolans = []
+		count1 = 0
+		count2 = 0
+		for token in self.tokenized_data :
+			count1 += 1
+			if token == ';' :
+				count2 += 1
+			if count1 == 1000 :
+				self.number_semicolans.append(count2)
+				count1=0
+				count2=0
+		self.full_features += "Number of semicolons per thousand tokens : "
+		self.full_features += str(self.number_semicolans)
+		self.full_features += "\n"
+		#print self.number_semicolans
+
+		## Number of quotation marks per thousand tokens
+		self.number_quotations = []
+		count1 = 0
+		count2 = 0
+		for token in self.tokenized_data :
+			count1 += 1
+			if token == '"' or token =="'":
+				count2 += 1
+			if count1 == 1000 :
+				self.number_quotations.append(count2)
+				count1=0
+				count2=0
+		self.full_features += "Number of quotation marks per thousand tokens : "
+		self.full_features += str(self.number_quotations)
+		self.full_features += "\n"
+		#print self.number_quotations
+
+		## Number of exclamation marks per thousand tokens
+		self.number_exclamations = []
+		count1 = 0
+		count2 = 0
+		for token in self.tokenized_data :
+			count1 += 1
+			if token == '!' :
+				count2 += 1
+			if count1 == 1000 :
+				self.number_exclamations.append(count2)
+				count1=0
+				count2=0
+		self.full_features += "Number of exclamation marks per thousand tokens : "
+		self.full_features += str(self.number_exclamations)
+		self.full_features += "\n"
+		#print self.number_exclamations
+
+		## Number of hyphens per thousand tokens
+		self.number_hyphens = []
+		count1 = 0
+		count2 = 0
+		for token in self.tokenized_data :
+			count1 += 1
+			if token == '-' :
+				count2 += 1
+			if count1 == 1000 :
+				self.number_hyphens.append(count2)
+				count1=0
+				count2=0
+		self.full_features += "Number of hyphens per thousand tokens : "
+		self.full_features += str(self.number_hyphens)
+		self.full_features += "\n"
+		#print self.number_hyphens
+
+		## Number of ands per thousand tokens
+		self.number_ands = []
+		count1 = 0
+		count2 = 0
+		for token in self.tokenized_data :
+			count1 += 1
+			if token == 'and' :
+				count2 += 1
+			if count1 == 1000 :
+				self.number_ands.append(count2)
+				count1=0
+				count2=0
+		self.full_features += "Number of ands per thousand tokens : "
+		self.full_features += str(self.number_ands)
+		self.full_features += "\n"
+		#print self.number_ands
+
+		## Number of buts per thousand tokens
+		self.number_buts = []
+		count1 = 0
+		count2 = 0
+		for token in self.tokenized_data :
+			count1 += 1
+			if token == 'but' :
+				count2 += 1
+			if count1 == 1000 :
+				self.number_buts.append(count2)
+				count1=0
+				count2=0
+		self.full_features += "Number of buts per thousand tokens : "
+		self.full_features += str(self.number_buts)
+		self.full_features += "\n"
+		#print self.number_buts
+
+		## Number of howevers per thousand tokens
+		self.number_howevers = []
+		count1 = 0
+		count2 = 0
+		for token in self.tokenized_data :
+			count1 += 1
+			if token == 'however' :
+				count2 += 1
+			if count1 == 1000 :
+				self.number_howevers.append(count2)
+				count1=0
+				count2=0
+		self.full_features += "Number of howevers per thousand tokens : "
+		self.full_features += str(self.number_howevers)
+		self.full_features += "\n"
+		#print self.number_howevers
+
+		## Number of ifs per thousand tokens
+		self.number_ifs = []
+		count1 = 0
+		count2 = 0
+		for token in self.tokenized_data :
+			count1 += 1
+			if token == 'if' :
+				count2 += 1
+			if count1 == 1000 :
+				self.number_ifs.append(count2)
+				count1=0
+				count2=0
+		self.full_features += "Number of ifs per thousand tokens : "
+		self.full_features += str(self.number_ifs)
+		self.full_features += "\n"
+		#print self.number_ifs
+
+		## Number of thats per thousand tokens
+		self.number_thats = []
+		count1 = 0
+		count2 = 0
+		for token in self.tokenized_data :
+			count1 += 1
+			if token == 'that' :
+				count2 += 1
+			if count1 == 1000 :
+				self.number_thats.append(count2)
+				count1=0
+				count2=0
+		self.full_features += "Number of thats per thousand tokens : "
+		self.full_features += str(self.number_thats)
+		self.full_features += "\n"
+		#print self.number_thats
+
+		## Number of mores per thousand tokens
+		self.number_mores = []
+		count1 = 0
+		count2 = 0
+		for token in self.tokenized_data :
+			count1 += 1
+			if token == 'more' :
+				count2 += 1
+			if count1 == 1000 :
+				self.number_mores.append(count2)
+				count1=0
+				count2=0
+		self.full_features += "Number of mores per thousand tokens : "
+		self.full_features += str(self.number_mores)
+		self.full_features += "\n"
+		#print self.number_mores
+
+		## Number of musts per thousand tokens
+		self.number_musts = []
+		count1 = 0
+		count2 = 0
+		for token in self.tokenized_data :
+			count1 += 1
+			if token == 'must' :
+				count2 += 1
+			if count1 == 1000 :
+				self.number_musts.append(count2)
+				count1=0
+				count2=0
+		self.full_features += "Number of musts per thousand tokens : "
+		self.full_features += str(self.number_musts)
+		self.full_features += "\n"
+		#print self.number_musts
+
+		## Number of mights per thousand tokens
+		self.number_mights = []
+		count1 = 0
+		count2 = 0
+		for token in self.tokenized_data :
+			count1 += 1
+			if token == 'might' :
+				count2 += 1
+			if count1 == 1000 :
+				self.number_mights.append(count2)
+				count1=0
+				count2=0
+		self.full_features += "Number of mights per thousand tokens : "
+		self.full_features += str(self.number_mights)
+		self.full_features += "\n"
+		#print self.number_mights
+
+		## Number of thiss per thousand tokens
+		self.number_thiss = []
+		count1 = 0
+		count2 = 0
+		for token in self.tokenized_data :
+			count1 += 1
+			if token == 'this' :
+				count2 += 1
+			if count1 == 1000 :
+				self.number_thiss.append(count2)
+				count1=0
+				count2=0
+		self.full_features += "Number of thiss per thousand tokens : "
+		self.full_features += str(self.number_thiss)
+		self.full_features += "\n"
+		#print self.number_thiss
+
+		## Number of verys per thousand tokens
+		self.number_verys = []
+		count1 = 0
+		count2 = 0
+		for token in self.tokenized_data :
+			count1 += 1
+			if token == 'very' :
+				count2 += 1
+			if count1 == 1000 :
+				self.number_verys.append(count2)
+				count1=0
+				count2=0
+		self.full_features += "Number of verys per thousand tokens : "
+		self.full_features += str(self.number_verys)
+		self.full_features += "\n"
+		#print self.number_verys
+
+		## Type-Token Ratio
+		data = list(self.tokenized_data)
+		stem = nltk.stem.porter.PorterStemmer()
+		rmve = []
+		for i in range(len(data)) :
+			try :
+				data[i] = stem.stem(data[i])
+			except :
+				rmve.append(i)
+				continue
+		for i in rmve :
+			data.remove(data[i])
+		self.type_token_ratio = []
+		for i in range(len(data)) :
+			found = False
+			for j in range(len(self.type_token_ratio)) :
+				if self.type_token_ratio[j][1] == data[i] :
+					found = True
+					break;
+			if found :
+				found=False
+				self.type_token_ratio[j][0]+=1
+				continue
+			else :
+				self.type_token_ratio.append([1,data[i]])
+		self.type_token_ratio.sort(reverse=True)
+		for token in self.type_token_ratio :
+			if len(token[1]) == 1 :
+				if token[1] == 'i' or token[1] == 'a' :
+					pass
+				else :
+					self.type_token_ratio.remove(token)
+			elif token[1][:1].isalpha() == False :
+				self.type_token_ratio.remove(token)
+			else :
+				pass
+		self.full_features += "\n--Type-Token Ratio--\n"
+		for i in self.type_token_ratio :
+			self.full_features += str(i)
+			self.full_features += "\n"
+		self.full_features += "\n"
+
+		## Mean word length
+		data = str(self.data)
+		data = data.replace("."," ")
+		data = data.replace(","," ")
+		data = data.replace("!"," ")
+		words = data.split()
+		words.sort()
+		count1=0
+		count2=0
+		for word in words :
+			if word[:1].isalpha() == False :
+				words.remove(word)
+			else :
+				#print word
+				count1+=len(word)
+				count2+=1
+		self.mean_word_length = float(float(count1)/float(count2))
+		self.full_features += "Mean word length : "
+		self.full_features += str(self.mean_word_length)
+		self.full_features += "\n"
+
+		## Mean Sentence Length
+		data = str(self.data)
+		#print data
+		#data = data.replace(".",".")
+		#data = data.replace("!",".")
+		#data = data.replace("?",".")
+		sentences = nltk.tokenize.sent_tokenize(data)
+		sentences.sort()
+		#print sentences
+		count1=0
+		count2=0
+		for sentence in sentences :
+			#print sentence
+			#if len(sentence)>5 :
+			count1+=len(sentence)
+			count2+=1
+		self.mean_sentence_length = float(float(count1)/float(count2))
+		self.full_features += "Mean Sentence length : "
+		self.full_features += str(self.mean_sentence_length)
+		self.full_features += "\n"
+
+		## Standard Deviation of Sentence Length
+		count1=0
+		count2=0
+		for sentence in sentences :
+			t = float(len(sentence))-self.mean_sentence_length
+			tt = t*t
+			count1+=tt
+			count2+=1
+		self.standard_deviation_sentence =  math.sqrt(float(float(count1)/(float(count2))))
+		self.full_features += "Standard Deviation of Sentence Length : "
+		self.full_features += str(self.standard_deviation_sentence)
+		self.full_features += "\n"
+		print self.full_features
+
+
 
 
 
