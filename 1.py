@@ -3,9 +3,13 @@ import os
 import sys
 import nltk
 import math
+import copy
 
 new_autho = []
 docss = []
+author_list = []
+novel_list = [[]]
+
 
 
 class main_window(wx.Frame) :
@@ -111,6 +115,8 @@ class about_window(wx.Frame) :
 
 
 class training_window(wx.Frame) :
+	global author_list
+	global novel_list
 	global docss
 	def __init__(self,parent,id) :
 		self.author_list=[]
@@ -157,6 +163,8 @@ class training_window(wx.Frame) :
 		self.Refresh()
 
 	def show_features_window(self) :
+		global author_list
+		global novel_list
 		global docss
 		try :
 			tmp=self.show_features_frame.GetSize()
@@ -166,6 +174,8 @@ class training_window(wx.Frame) :
 				for doc in auth[1:-1] :
 					#print doc
 					self.docs.append(features(doc,auth[-1],auth[0]))
+			author_list = self.author_list
+			novel_list = self.novel_list
 			docss = self.docs
 			self.show_features_frame=self.training_window1(parent=None,id=1)
 			self.show_features_frame.Show()
@@ -304,14 +314,29 @@ class training_window(wx.Frame) :
 
 	class training_window1(wx.Frame) :
 		global docss
+		global author_list
+		global novel_list
 		def __init__(self,parent,id) :
+			global author_list
+			global novel_list
+			self.author_list = copy.copy(author_list)
+			self.novel_list = copy.copy(novel_list)
+			self.features_list = []
+			for i in self.novel_list :
+				a = []
+				for j in i :
+					a.append(0)
+				self.features_list.append(a)
+			#print self.author_list
+			#print self.novel_list
 			global docss
 			self.docs = docss
 			for doc in self.docs :
 				doc.extract_features()
-			self.author_list=[]
-			self.novel_list=[]
-			self.numberOfAuthors=0
+				i = self.author_list.index(doc.authorname)
+				j = self.novel_list[i].index(doc.docname)
+				self.features_list[i][j] = doc.full_features
+
 			wx.Frame.__init__(self,parent,id,'Training..!!!!!',size=(600,450),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
 			self.panel=wx.Panel(self)
 			self.panel.SetBackgroundColour(wx.Colour(220,220,250))
@@ -323,9 +348,9 @@ class training_window(wx.Frame) :
 			self.authorNameChoices.SetSelection(0)
 			self.novelNameText=wx.StaticText(self.panel,-1,"Novel Name\t : ",pos=(20,80),size=(30,50))
 			self.novelNameText.SetFont(font1)
-			self.novelNameChoices=wx.Choice(self.panel,-1,pos=(155,80),size=(290,30))
+			self.novelNameChoices=wx.Choice(self.panel,-1,pos=(155,80),size=(290,30),choices=self.novel_list[self.authorNameChoices.GetSelection()])
 			self.novelNameChoices.SetSelection(0)
-			self.novelPrev=wx.TextCtrl(self.panel,-1,"",pos=(50,130),size=(500,200),style=wx.TE_MULTILINE)
+			self.novelPrev=wx.TextCtrl(self.panel,-1,self.features_list[0][0],pos=(50,130),size=(500,200),style=wx.TE_MULTILINE)
 			self.novelPrev.SetInsertionPoint(0)
 			#self.Bind(wx.EVT_CHOICE, self.set_new_author_novel_preview, self.authorNameChoices)
 			#self.Bind(wx.EVT_CHOICE, self.set_new_novel_preview, self.novelNameChoices)
@@ -520,7 +545,7 @@ class features() :
 				self.number_comas.append(count2)
 				count1=0
 				count2=0
-		self.full_features += "Number of comas per thousand tokens : "
+		self.full_features += "Number of comas per thousand tokens = "
 		self.full_features += str(self.number_comas)
 		self.full_features += "\n"
 		#print self.number_comas
@@ -537,7 +562,7 @@ class features() :
 				self.number_semicolans.append(count2)
 				count1=0
 				count2=0
-		self.full_features += "Number of semicolons per thousand tokens : "
+		self.full_features += "Number of semicolons per thousand tokens = "
 		self.full_features += str(self.number_semicolans)
 		self.full_features += "\n"
 		#print self.number_semicolans
@@ -554,7 +579,7 @@ class features() :
 				self.number_quotations.append(count2)
 				count1=0
 				count2=0
-		self.full_features += "Number of quotation marks per thousand tokens : "
+		self.full_features += "Number of quotation marks per thousand tokens = "
 		self.full_features += str(self.number_quotations)
 		self.full_features += "\n"
 		#print self.number_quotations
@@ -571,7 +596,7 @@ class features() :
 				self.number_exclamations.append(count2)
 				count1=0
 				count2=0
-		self.full_features += "Number of exclamation marks per thousand tokens : "
+		self.full_features += "Number of exclamation marks per thousand tokens = "
 		self.full_features += str(self.number_exclamations)
 		self.full_features += "\n"
 		#print self.number_exclamations
@@ -588,7 +613,7 @@ class features() :
 				self.number_hyphens.append(count2)
 				count1=0
 				count2=0
-		self.full_features += "Number of hyphens per thousand tokens : "
+		self.full_features += "Number of hyphens per thousand tokens = "
 		self.full_features += str(self.number_hyphens)
 		self.full_features += "\n"
 		#print self.number_hyphens
@@ -605,7 +630,7 @@ class features() :
 				self.number_ands.append(count2)
 				count1=0
 				count2=0
-		self.full_features += "Number of ands per thousand tokens : "
+		self.full_features += "Number of ands per thousand tokens = "
 		self.full_features += str(self.number_ands)
 		self.full_features += "\n"
 		#print self.number_ands
@@ -622,7 +647,7 @@ class features() :
 				self.number_buts.append(count2)
 				count1=0
 				count2=0
-		self.full_features += "Number of buts per thousand tokens : "
+		self.full_features += "Number of buts per thousand tokens = "
 		self.full_features += str(self.number_buts)
 		self.full_features += "\n"
 		#print self.number_buts
@@ -639,7 +664,7 @@ class features() :
 				self.number_howevers.append(count2)
 				count1=0
 				count2=0
-		self.full_features += "Number of howevers per thousand tokens : "
+		self.full_features += "Number of howevers per thousand tokens = "
 		self.full_features += str(self.number_howevers)
 		self.full_features += "\n"
 		#print self.number_howevers
@@ -656,7 +681,7 @@ class features() :
 				self.number_ifs.append(count2)
 				count1=0
 				count2=0
-		self.full_features += "Number of ifs per thousand tokens : "
+		self.full_features += "Number of ifs per thousand tokens = "
 		self.full_features += str(self.number_ifs)
 		self.full_features += "\n"
 		#print self.number_ifs
@@ -673,7 +698,7 @@ class features() :
 				self.number_thats.append(count2)
 				count1=0
 				count2=0
-		self.full_features += "Number of thats per thousand tokens : "
+		self.full_features += "Number of thats per thousand tokens = "
 		self.full_features += str(self.number_thats)
 		self.full_features += "\n"
 		#print self.number_thats
@@ -690,7 +715,7 @@ class features() :
 				self.number_mores.append(count2)
 				count1=0
 				count2=0
-		self.full_features += "Number of mores per thousand tokens : "
+		self.full_features += "Number of mores per thousand tokens = "
 		self.full_features += str(self.number_mores)
 		self.full_features += "\n"
 		#print self.number_mores
@@ -707,7 +732,7 @@ class features() :
 				self.number_musts.append(count2)
 				count1=0
 				count2=0
-		self.full_features += "Number of musts per thousand tokens : "
+		self.full_features += "Number of musts per thousand tokens = "
 		self.full_features += str(self.number_musts)
 		self.full_features += "\n"
 		#print self.number_musts
@@ -724,7 +749,7 @@ class features() :
 				self.number_mights.append(count2)
 				count1=0
 				count2=0
-		self.full_features += "Number of mights per thousand tokens : "
+		self.full_features += "Number of mights per thousand tokens = "
 		self.full_features += str(self.number_mights)
 		self.full_features += "\n"
 		#print self.number_mights
@@ -741,7 +766,7 @@ class features() :
 				self.number_thiss.append(count2)
 				count1=0
 				count2=0
-		self.full_features += "Number of thiss per thousand tokens : "
+		self.full_features += "Number of thiss per thousand tokens = "
 		self.full_features += str(self.number_thiss)
 		self.full_features += "\n"
 		#print self.number_thiss
@@ -758,7 +783,7 @@ class features() :
 				self.number_verys.append(count2)
 				count1=0
 				count2=0
-		self.full_features += "Number of verys per thousand tokens : "
+		self.full_features += "Number of verys per thousand tokens = "
 		self.full_features += str(self.number_verys)
 		self.full_features += "\n"
 		#print self.number_verys
@@ -822,7 +847,7 @@ class features() :
 				count1+=len(word)
 				count2+=1
 		self.mean_word_length = float(float(count1)/float(count2))
-		self.full_features += "Mean word length : "
+		self.full_features += "Mean word length = "
 		self.full_features += str(self.mean_word_length)
 		self.full_features += "\n"
 
@@ -843,7 +868,7 @@ class features() :
 			count1+=len(sentence)
 			count2+=1
 		self.mean_sentence_length = float(float(count1)/float(count2))
-		self.full_features += "Mean Sentence length : "
+		self.full_features += "Mean Sentence length = "
 		self.full_features += str(self.mean_sentence_length)
 		self.full_features += "\n"
 
@@ -856,10 +881,10 @@ class features() :
 			count1+=tt
 			count2+=1
 		self.standard_deviation_sentence =  math.sqrt(float(float(count1)/(float(count2))))
-		self.full_features += "Standard Deviation of Sentence Length : "
+		self.full_features += "Standard Deviation of Sentence Length = "
 		self.full_features += str(self.standard_deviation_sentence)
 		self.full_features += "\n"
-		print self.full_features
+		#print self.full_features
 
 
 
@@ -876,5 +901,5 @@ def main() :
 
 
 
-if __name__=='__main__' :
+if __name__ == '__main__' :
 	main()
