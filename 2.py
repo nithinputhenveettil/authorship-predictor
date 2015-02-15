@@ -133,9 +133,9 @@ class training_window(wx.Frame) :
 		self.novelPrev.SetInsertionPoint(0)
 		self.Bind(wx.EVT_CHOICE, self.set_new_author_novel_preview, self.authorNameChoices)
 		self.Bind(wx.EVT_CHOICE, self.set_new_novel_preview, self.novelNameChoices)
-		start_training_button=wx.Button(self.panel,label="Extract Features",pos=(150,500),size=(300,40))
+		start_training_button=wx.Button(self.panel,label="Start Training",pos=(150,500),size=(300,40))
 		start_training_button.SetFont(font1)
-		self.Bind(wx.EVT_BUTTON, self.start_extract_features_dialog, start_training_button)
+		self.Bind(wx.EVT_BUTTON, self.start_training_dialog, start_training_button)
 		self.numberAuthors=wx.StaticText(self.panel,-1,"Number Of Authors Selected : "+str(self.numberOfAuthors),(120,30),(360,-1),wx.ALIGN_CENTER)
 		font = wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.BOLD)
 		font.SetPointSize(15)
@@ -151,16 +151,6 @@ class training_window(wx.Frame) :
 		#print text1
 		self.novelPrev.SetValue(text1)			
 		self.Refresh()
-
-	def show_features_window(self) :
-		try :
-			tmp=self.show_features_frame.GetSize()
-		except :
-			self.show_features_frame=self.training_window1(parent=None,id=1)
-			self.show_features_frame.Show()
-			#self.show_features_frame.Bind(wx.EVT_CLOSE, self.add_new_author,self.new_author_frame)
-
-
 
 	def set_new_novel_preview(self,event) :
 		file1 = self.authors[self.authorNameChoices.GetSelection()][0]+"/"+self.authors[self.authorNameChoices.GetSelection()][1+self.novelNameChoices.GetSelection()]
@@ -214,23 +204,21 @@ class training_window(wx.Frame) :
 			
 
 
-	def start_extract_features_dialog(self,event) :
+	def start_training_dialog(self,event) :
 		if self.numberOfAuthors==0 :
 			box=wx.MessageDialog(None,"Please input atleast one author details..!!!",'Alert',wx.OK)
 			answer=box.ShowModal()
 			box.Destroy()
 		else :
-			box=wx.MessageDialog(None,"Extract Features..!!???",'Alert',wx.YES_NO)
+			box=wx.MessageDialog(None,"Start Training..!!???",'Alert',wx.YES_NO)
 			answer=box.ShowModal()
 			box.Destroy()
 			if answer==wx.ID_YES :
-				#pass
-				#print "Training Started with data!!!!","\n",self.authors
+				print "Training Started with data!!!!","\n",self.authors
 				## Place to call the training Function!!!!!!!
-				#box=wx.MessageDialog(None,"Training Started!!!",'Alert',wx.OK)
-				#answer=box.ShowModal()
-				#box.Destroy()
-				self.show_features_window()
+				box=wx.MessageDialog(None,"Training Started!!!",'Alert',wx.OK)
+				answer=box.ShowModal()
+				box.Destroy()
 
 
 
@@ -288,47 +276,6 @@ class training_window(wx.Frame) :
 
 
 
-	class training_window1(wx.Frame) :
-		def __init__(self,parent,id) :
-			self.author_list=[]
-			self.novel_list=[]
-			self.numberOfAuthors=0
-			self.authors=[]
-			wx.Frame.__init__(self,parent,id,'Training..!!!!!',size=(600,450),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
-			self.panel=wx.Panel(self)
-			self.panel.SetBackgroundColour(wx.Colour(220,220,250))
-			font1 = wx.Font(10, wx.DEFAULT, wx.NORMAL,wx.FONTWEIGHT_NORMAL)
-			font1.SetPointSize(12)
-			self.authorNameText=wx.StaticText(self.panel,-1,"Author Name\t : ",pos=(20,30),size=(30,50))
-			self.authorNameText.SetFont(font1)
-			self.authorNameChoices=wx.Choice(self.panel,-1,pos=(155,30),size=(290,30),choices=self.author_list)
-			self.authorNameChoices.SetSelection(0)
-			self.novelNameText=wx.StaticText(self.panel,-1,"Novel Name\t : ",pos=(20,80),size=(30,50))
-			self.novelNameText.SetFont(font1)
-			self.novelNameChoices=wx.Choice(self.panel,-1,pos=(155,80),size=(290,30))
-			self.novelNameChoices.SetSelection(0)
-			self.novelPrev=wx.TextCtrl(self.panel,-1,"",pos=(50,130),size=(500,200),style=wx.TE_MULTILINE)
-			self.novelPrev.SetInsertionPoint(0)
-			#self.Bind(wx.EVT_CHOICE, self.set_new_author_novel_preview, self.authorNameChoices)
-			#self.Bind(wx.EVT_CHOICE, self.set_new_novel_preview, self.novelNameChoices)
-			start_training_button=wx.Button(self.panel,label="Start Training",pos=(150,370),size=(300,40))
-			start_training_button.SetFont(font1)
-			#self.Bind(wx.EVT_BUTTON, self.start_extract_features_dialog, start_training_button)
-			font = wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.BOLD)
-			font.SetPointSize(15)
-			#self.numberAuthors.SetFont(font)
-			#self.Bind(wx.EVT_CLOSE, self.close_all)
-
-		def close_all(self,event) :
-			try :
-				self.Destroy()
-			except :
-				pass
-
-
-
-
-
 
 
 
@@ -336,6 +283,8 @@ class training_window(wx.Frame) :
 
 
 class testing_window(wx.Frame) :
+	
+	
 	def __init__(self,parent,id) :
 		self.author_list=open("author_list.txt","r").readlines()
 		self.testing_novel=[]
