@@ -334,6 +334,7 @@ class training_window(wx.Frame) :
 			self.docs = docss
 			for doc in self.docs :
 				doc.extract_features()
+				doc.create_csv_file()
 				i = self.author_list.index(doc.authorname)
 				j = self.novel_list[i].index(doc.docname)
 				self.features_list[i][j] = doc.full_features
@@ -574,8 +575,60 @@ class features() :
 			os.mkdir(path+"/generated_files")
 		except :
 			pass
+		try :
+			file1 = open(path+"/generated_files/"+self.authorname+".csv","r")
+		except :
+			file1 = open(path+"/generated_files/"+self.authorname+".csv","a+")
+			#file1.write(self.authorname+"\n")
+			a = ","
+			a += "Average Number of comas per thousand tokens,"
+			a += "Average Number of semicolons per thousand tokens,"
+			a += "Average Number of quotation marks per thousand tokens,"
+			a += "Average Number of exclamation marks per thousand tokens,"
+			a += "Average Number of hyphens per thousand tokens,"
+			a += "Average Number of ands per thousand tokens,"
+			a += "Average Number of buts per thousand tokens,"
+			a += "Average Number of howevers per thousand tokens,"
+			a += "Average Number of ifs per thousand tokens,"
+			a += "Average Number of thats per thousand tokens,"
+			a += "Average Number of mores per thousand tokens,"
+			a += "Average Number of musts per thousand tokens,"
+			a += "Average Number of mights per thousand tokens,"
+			a += "Average Number of thiss per thousand tokens,"
+			a += "Average Number of verys per thousand tokens,"
+			a += "Mean Word Length,"
+			a += "Mean Sentence Length,"
+			a += "Standard deviation of Sentence Length\n"
+			file1.write(a)
+			file1.close()
+			
 		file1 = open(path+"/generated_files/"+self.authorname+".csv","a+")
 		#file1.write(self.authorname)
+		#file1.write(self.authorname+""\n)
+		a = self.docname
+		a += ","
+		a += str(float(sum(self.number_comas))/float(len(self.number_comas)))+","
+		a += str(float(sum(self.number_semicolans))/float(len(self.number_semicolans)))+","
+		a += str(float(sum(self.number_quotations))/float(len(self.number_quotations)))+","
+		a += str(float(sum(self.number_exclamations))/float(len(self.number_exclamations)))+","
+		a += str(float(sum(self.number_hyphens))/float(len(self.number_hyphens)))+","
+		a += str(float(sum(self.number_ands))/float(len(self.number_ands)))+","
+		a += str(float(sum(self.number_buts))/float(len(self.number_buts)))+","
+		a += str(float(sum(self.number_howevers))/float(len(self.number_howevers)))+","
+		a += str(float(sum(self.number_ifs))/float(len(self.number_ifs)))+","
+		a += str(float(sum(self.number_thats))/float(len(self.number_thats)))+","
+		a += str(float(sum(self.number_mores))/float(len(self.number_mores)))+","
+		a += str(float(sum(self.number_musts))/float(len(self.number_musts)))+","
+
+		a += str(float(sum(self.number_mights))/float(len(self.number_mights)))+","
+		a += str(float(sum(self.number_thiss))/float(len(self.number_thiss)))+","
+		a += str(float(sum(self.number_verys))/float(len(self.number_verys)))+","
+		a += str(self.mean_word_length)+","
+		a += str(self.mean_sentence_length)+","
+		a += str(self.standard_deviation_sentence)+","
+		a += "\n"
+		file1.write(a)
+		file1.close()
 
 	def extract_features(self) :
 		self.full_features = "----Features-----\n\n"
@@ -932,7 +985,7 @@ class features() :
 		self.full_features += "\n\n"
 		#print self.full_features
 		print "Features of ",self.docname," is extracted."
-		self.create_csv_file()
+		#self.create_csv_file()
 
 
 
