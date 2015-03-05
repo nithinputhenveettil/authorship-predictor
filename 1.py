@@ -258,7 +258,7 @@ class training_window(wx.Frame) :
 
 
 	def start_extract_features_dialog(self,event) :
-		self.show_features_window()
+		#self.show_features_window()
 		
 		if self.numberOfAuthors==0 :
 			box=wx.MessageDialog(None,"Please input atleast one author details..!!!",'Alert',wx.OK)
