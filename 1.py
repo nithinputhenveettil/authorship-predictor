@@ -1,3 +1,4 @@
+from sklearn.svm import LinearSVC
 import wx
 import os
 import sys
@@ -5,6 +6,7 @@ import nltk
 import math
 import copy
 
+tr = []
 new_autho = []
 docss = []
 author_list = []
@@ -250,6 +252,9 @@ class training_window(wx.Frame) :
 				box=wx.MessageDialog(None,"Training Started!!!",'Alert',wx.OK)
 				answer=box.ShowModal()
 				box.Destroy()
+				global tr
+				tr = TrainingTesting()
+				tr.train()
 
 		except :
 			box=wx.MessageDialog(None,"Please extract features first.",'Alert',wx.OK)
@@ -427,6 +432,9 @@ class training_window(wx.Frame) :
 					box=wx.MessageDialog(None,"Training Started!!!",'Alert',wx.OK)
 					answer=box.ShowModal()
 					box.Destroy()
+					global tr
+					tr = TrainingTesting()
+					tr.train()
 
 			except :
 				box=wx.MessageDialog(None,"Please extract features first.",'Alert',wx.OK)
@@ -523,7 +531,40 @@ class testing_window(wx.Frame) :
 				box=wx.MessageDialog(None,"Test Started!!!",'Alert',wx.OK)
 				answer=box.ShowModal()
 				box.Destroy()
+				self.start_testing()
 
+
+	def start_testing(self) :
+		doc = features(self.testing_novel[1][1],'unknown',self.testing_novel[1][0])
+		doc.extract_features()
+		#print doc.number_comas
+		#pass
+		self.test_data = []
+		self.test_data.append(float(sum(doc.number_comas))/float(len(doc.number_comas)))
+		self.test_data.append(float(sum(doc.number_semicolans))/float(len(doc.number_semicolans)))
+		self.test_data.append(float(sum(doc.number_quotations))/float(len(doc.number_quotations)))
+		self.test_data.append(float(sum(doc.number_exclamations))/float(len(doc.number_exclamations)))
+		self.test_data.append(float(sum(doc.number_hyphens))/float(len(doc.number_hyphens)))
+		self.test_data.append(float(sum(doc.number_ands))/float(len(doc.number_ands)))
+		self.test_data.append(float(sum(doc.number_buts))/float(len(doc.number_buts)))
+		self.test_data.append(float(sum(doc.number_howevers))/float(len(doc.number_howevers)))
+		self.test_data.append(float(sum(doc.number_ifs))/float(len(doc.number_ifs)))
+
+		self.test_data.append(float(sum(doc.number_thats))/float(len(doc.number_thats)))
+		self.test_data.append(float(sum(doc.number_mores))/float(len(doc.number_mores)))
+		self.test_data.append(float(sum(doc.number_musts))/float(len(doc.number_musts)))
+		self.test_data.append(float(sum(doc.number_mights))/float(len(doc.number_mights)))
+		self.test_data.append(float(sum(doc.number_thiss))/float(len(doc.number_thiss)))
+		self.test_data.append(float(sum(doc.number_verys))/float(len(doc.number_verys)))
+		self.test_data.append(doc.mean_word_length)
+		self.test_data.append(doc.mean_sentence_length)
+		self.test_data.append(doc.standard_deviation_sentence)
+
+		tr.test(self.test_data)
+		
+		box=wx.MessageDialog(None,"Author of the document is '"+tr.correct_author_name+"'.",'Alert',wx.OK)
+		answer=box.ShowModal()
+		box.Destroy()
 
 
 	def disable_choices(self,event) :
@@ -1030,6 +1071,34 @@ class features() :
 
 
 
+class TrainingTesting() :
+	def __init__(self) :
+		self.y = []
+		self.noa = 0
+		self.author_names = []
+		self.train_data = []
+		self.author_files = os.listdir(path+"/generated_files")
+		#print author_names
+		for author in self.author_files :
+			self.author_names.append(author[:-4])
+			text1 = open(path+"/generated_files/"+author,"r").read().split("\n")
+			#print text1[1:-1]
+			for txt in text1[1:-1] :
+				t = []
+				self.y.append(self.noa)
+				#t.append(self.noa) 
+				for i in txt.split(",")[1:-1] :
+					t.append(float(i))
+				self.train_data.append(t)
+			self.noa += 1
+		#print self.y
+		#print self.train_data
+	def train(self) :
+		self.clfr = LinearSVC()
+		self.clfr.fit(self.train_data,self.y)
+		#print self.author_names[clfr.predict(self.train_data[0])[0]]
+	def test(self,test_data) :
+		self.correct_author_name = self.author_names[self.clfr.predict(test_data)[0]]
 
 
 
