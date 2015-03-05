@@ -146,9 +146,10 @@ class training_window(wx.Frame) :
 		self.Bind(wx.EVT_CHOICE, self.set_new_novel_preview, self.novelNameChoices)
 		extract_features_button=wx.Button(self.panel,label="Extract Features",pos=(80,500),size=(200,40))
 		extract_features_button.SetFont(font1)
+		self.Bind(wx.EVT_BUTTON, self.start_extract_features_dialog, extract_features_button)
 		start_training_button=wx.Button(self.panel,label="Start Training",pos=(300,500),size=(200,40))
 		start_training_button.SetFont(font1)
-		self.Bind(wx.EVT_BUTTON, self.start_extract_features_dialog, extract_features_button)
+		self.Bind(wx.EVT_BUTTON, self.start_training, start_training_button)
 		self.numberAuthors=wx.StaticText(self.panel,-1,"Number Of Authors Selected : "+str(self.numberOfAuthors),(120,30),(360,-1),wx.ALIGN_CENTER)
 		font = wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.BOLD)
 		font.SetPointSize(15)
@@ -236,10 +237,28 @@ class training_window(wx.Frame) :
 		except :
 			self.new_author_frame.Destroy()
 			
+	def start_training(self,event) :
+		try :
+			#print path+'generated_files'
+			tmp = os.listdir(path+'/generated_files')[0]
+			box=wx.MessageDialog(None,"Start Training..!!???",'Alert',wx.YES_NO)
+			answer=box.ShowModal()
+			box.Destroy()
+			if answer==wx.ID_YES :
+				print "Training Started"
+				## Place to call the start trainin Function!!!!!!!
+				box=wx.MessageDialog(None,"Training Started!!!",'Alert',wx.OK)
+				answer=box.ShowModal()
+				box.Destroy()
+
+		except :
+			box=wx.MessageDialog(None,"Please extract features first.",'Alert',wx.OK)
+			answer=box.ShowModal()
+			box.Destroy()
 
 
 	def start_extract_features_dialog(self,event) :
-		#self.show_features_window()
+		self.show_features_window()
 		
 		if self.numberOfAuthors==0 :
 			box=wx.MessageDialog(None,"Please input atleast one author details..!!!",'Alert',wx.OK)
@@ -258,6 +277,7 @@ class training_window(wx.Frame) :
 				answer=box.ShowModal()
 				box.Destroy()
 				self.show_features_window()
+		
 		
 
 
@@ -360,6 +380,7 @@ class training_window(wx.Frame) :
 			self.Bind(wx.EVT_CHOICE, self.set_new_author_features_preview, self.authorNameChoices)
 			self.Bind(wx.EVT_CHOICE, self.set_new_novel_features_preview, self.novelNameChoices)
 			start_training_button=wx.Button(self.panel,label="Start Training",pos=(300,370),size=(200,40))
+			self.Bind(wx.EVT_BUTTON, self.start_training, start_training_button)
 			start_training_button.SetFont(font1)
 			save_features_button=wx.Button(self.panel,label="Save Features",pos=(70,370),size=(190,40))
 			save_features_button.SetFont(font1)
@@ -394,6 +415,23 @@ class training_window(wx.Frame) :
 			answer=box.ShowModal()
 			box.Destroy()
 			
+		def start_training(self,event) :
+			try :
+				tmp = os.listdir(path+'/generated_files')[0]
+				box=wx.MessageDialog(None,"Start Training..!!???",'Alert',wx.YES_NO)
+				answer=box.ShowModal()
+				box.Destroy()
+				if answer==wx.ID_YES :
+					print "Training Started"
+					## Place to call the start trainin Function!!!!!!!
+					box=wx.MessageDialog(None,"Training Started!!!",'Alert',wx.OK)
+					answer=box.ShowModal()
+					box.Destroy()
+
+			except :
+				box=wx.MessageDialog(None,"Please extract features first.",'Alert',wx.OK)
+				answer=box.ShowModal()
+				box.Destroy()
 
 				
 		
