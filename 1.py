@@ -144,9 +144,11 @@ class training_window(wx.Frame) :
 		self.novelPrev.SetInsertionPoint(0)
 		self.Bind(wx.EVT_CHOICE, self.set_new_author_novel_preview, self.authorNameChoices)
 		self.Bind(wx.EVT_CHOICE, self.set_new_novel_preview, self.novelNameChoices)
-		start_training_button=wx.Button(self.panel,label="Extract Features",pos=(150,500),size=(300,40))
+		extract_features_button=wx.Button(self.panel,label="Extract Features",pos=(80,500),size=(200,40))
+		extract_features_button.SetFont(font1)
+		start_training_button=wx.Button(self.panel,label="Start Training",pos=(300,500),size=(200,40))
 		start_training_button.SetFont(font1)
-		self.Bind(wx.EVT_BUTTON, self.start_extract_features_dialog, start_training_button)
+		self.Bind(wx.EVT_BUTTON, self.start_extract_features_dialog, extract_features_button)
 		self.numberAuthors=wx.StaticText(self.panel,-1,"Number Of Authors Selected : "+str(self.numberOfAuthors),(120,30),(360,-1),wx.ALIGN_CENTER)
 		font = wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.BOLD)
 		font.SetPointSize(15)
@@ -237,8 +239,8 @@ class training_window(wx.Frame) :
 
 
 	def start_extract_features_dialog(self,event) :
-		self.show_features_window()
-		"""
+		#self.show_features_window()
+		
 		if self.numberOfAuthors==0 :
 			box=wx.MessageDialog(None,"Please input atleast one author details..!!!",'Alert',wx.OK)
 			answer=box.ShowModal()
@@ -247,15 +249,16 @@ class training_window(wx.Frame) :
 			box=wx.MessageDialog(None,"Extract Features..!!???",'Alert',wx.YES_NO)
 			answer=box.ShowModal()
 			box.Destroy()
+			#print "haiiii"
 			if answer==wx.ID_YES :
 				#pass
-				#print "Training Started with data!!!!","\n",self.authors
-				## Place to call the training Function!!!!!!!
-				#box=wx.MessageDialog(None,"Training Started!!!",'Alert',wx.OK)
-				#answer=box.ShowModal()
-				#box.Destroy()
+				print "Feature extraction Started with data!!!!","\n",self.authors
+				## Place to call the feature extraction Function!!!!!!!
+				box=wx.MessageDialog(None,"Feature extraction Started!!!",'Alert',wx.OK)
+				answer=box.ShowModal()
+				box.Destroy()
 				self.show_features_window()
-		"""
+		
 
 
 
