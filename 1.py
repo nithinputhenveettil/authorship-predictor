@@ -323,7 +323,7 @@ class training_window(wx.Frame) :
 			open_dlg.Destroy()
 			self.new_author=[]
 			novels=""
-			novels+=open_dlg.GetDirectory()
+			novels+=open_dlg.GetDir0ectory()
 			self.new_author.append(open_dlg.GetDirectory())
 			for i in range(len(open_dlg.GetFilenames())) :
 				novels+=open_dlg.GetFilenames()[i]
@@ -505,11 +505,11 @@ class testing_window(wx.Frame) :
 		self.novelText.SetInsertionPoint(0)
 		self.author1Text=wx.StaticText(panel,-1,"Select Author 1 \t : ",pos=(20,180),size=(30,50))
 		self.author1Text.SetFont(font1)
-		self.author1Choices=wx.Choice(panel,-1,pos=(155,180),size=(290,50),choices=self.author_list)
+		self.author1Choices=wx.Choice(panel,-1,pos=(155,180),size=(290,30),choices=self.author_list)
 		self.author1Choices.SetSelection(0)
 		self.author2Text=wx.StaticText(panel,-1,"Select Author 2 \t : ",pos=(20,220),size=(30,50))
 		self.author2Text.SetFont(font1)
-		self.author2Choices=wx.Choice(panel,-1,pos=(155,220),size=(290,50),choices=self.author_list)
+		self.author2Choices=wx.Choice(panel,-1,pos=(155,220),size=(290,30),choices=self.author_list)
 		self.author2Choices.SetSelection(1)
 		self.author2Choices.Disable()
 		self.author1Choices.Disable()
@@ -543,7 +543,17 @@ class testing_window(wx.Frame) :
 				if self.testing_novel[0] :
 					self.start_binary_testing()
 				else :
-					self.start_all_testing()
+					try : 
+						tr.author_names
+						self.start_all_testing()
+					except :
+						box=wx.MessageDialog(None,"Train the system first.",'Alert',wx.OK)
+						answer=box.ShowModal()
+						box.Destroy()
+
+
+	
+
 
 	def start_binary_testing(self) :
 		doc = features(self.testing_novel[1][1],'unknown',self.testing_novel[1][0])
@@ -597,13 +607,14 @@ class testing_window(wx.Frame) :
 		clfr1.fit(train_data,y)
 		auth_name = author_names[clfr1.predict(self.test_data)[0]]
 
-		box=wx.MessageDialog(None,"Author of the document is '"+auth_name+"'.",'Alert',wx.OK)
+		box=wx.MessageDialog(None,"Author of the document is '"+auth_name+"'.",'message',wx.OK)
 		answer=box.ShowModal()
 		box.Destroy()
 
 		
 
 	def start_all_testing(self) :
+		
 		doc = features(self.testing_novel[1][1],'unknown',self.testing_novel[1][0])
 		doc.extract_features()
 		#print doc.number_comas
@@ -631,7 +642,7 @@ class testing_window(wx.Frame) :
 
 		tr.test(self.test_data)
 		
-		box=wx.MessageDialog(None,"Author of the document is '"+tr.correct_author_name+"'.",'Alert',wx.OK)
+		box=wx.MessageDialog(None,"Author of the document is '"+tr.correct_author_name+"'.",'message',wx.OK)
 		answer=box.ShowModal()
 		box.Destroy()
 
