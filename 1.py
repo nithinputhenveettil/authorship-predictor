@@ -472,7 +472,7 @@ class training_window(wx.Frame) :
 
 class testing_window(wx.Frame) :
 	def __init__(self,parent,id) :
-		self.author_list=open("author_list.txt","r").readlines()
+		self.author_list=open(path+"/author_list.txt","r").readlines()
 		self.testing_novel=[]
 		self.novel1=[]
 		wx.Frame.__init__(self,parent,id,'Testing..!!!!!',size=(480,400),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
