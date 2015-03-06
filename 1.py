@@ -249,12 +249,12 @@ class training_window(wx.Frame) :
 			if answer==wx.ID_YES :
 				print "Training Started"
 				## Place to call the start trainin Function!!!!!!!
-				box=wx.MessageDialog(None,"Training Started!!!",'Alert',wx.OK)
-				answer=box.ShowModal()
-				box.Destroy()
 				global tr
 				tr = TrainingTesting()
 				tr.train()
+				box=wx.MessageDialog(None,"Training Completed..!!",'Alert',wx.OK)
+				answer=box.ShowModal()
+				box.Destroy()
 
 		except :
 			box=wx.MessageDialog(None,"Please extract features first.",'Alert',wx.OK)
@@ -278,9 +278,9 @@ class training_window(wx.Frame) :
 				#pass
 				print "Feature extraction Started with data!!!!","\n",self.authors
 				## Place to call the feature extraction Function!!!!!!!
-				box=wx.MessageDialog(None,"Feature extraction Started!!!",'Alert',wx.OK)
-				answer=box.ShowModal()
-				box.Destroy()
+				#box=wx.MessageDialog(None,"Feature extraction Started!!!",'Alert',wx.OK)
+				#answer=box.ShowModal()
+				#box.Destroy()
 				self.show_features_window()
 		
 		
@@ -429,12 +429,12 @@ class training_window(wx.Frame) :
 				if answer==wx.ID_YES :
 					print "Training Started"
 					## Place to call the start trainin Function!!!!!!!
-					box=wx.MessageDialog(None,"Training Started!!!",'Alert',wx.OK)
-					answer=box.ShowModal()
-					box.Destroy()
 					global tr
 					tr = TrainingTesting()
 					tr.train()
+					box=wx.MessageDialog(None,"Training Completed..!!",'Alert',wx.OK)
+					answer=box.ShowModal()
+					box.Destroy()
 
 			except :
 				box=wx.MessageDialog(None,"Please extract features first.",'Alert',wx.OK)
@@ -472,7 +472,16 @@ class training_window(wx.Frame) :
 
 class testing_window(wx.Frame) :
 	def __init__(self,parent,id) :
-		self.author_list=open(path+"/author_list.txt","r").readlines()
+		self.author_list = []
+		try :
+			a = os.listdir(path+"/generated_files/")
+			for b in a :
+				self.author_list.append(b[:-4])
+		except :
+			self.author_list.append(' ')
+			self.author_list.append(' ')
+
+
 		self.testing_novel=[]
 		self.novel1=[]
 		wx.Frame.__init__(self,parent,id,'Testing..!!!!!',size=(480,400),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
@@ -528,13 +537,73 @@ class testing_window(wx.Frame) :
 				self.testing_novel.append(self.novel1)
 				print "Testing Started with data!!!!","\n",self.testing_novel
 				## Place to call the testing Function!!!!!!!
-				box=wx.MessageDialog(None,"Test Started!!!",'Alert',wx.OK)
+				"""box=wx.MessageDialog(None,"Test Started!!!",'Alert',wx.OK)
 				answer=box.ShowModal()
-				box.Destroy()
-				self.start_testing()
+				box.Destroy()"""
+				if self.testing_novel[0] :
+					self.start_binary_testing()
+				else :
+					self.start_all_testing()
 
+	def start_binary_testing(self) :
+		doc = features(self.testing_novel[1][1],'unknown',self.testing_novel[1][0])
+		doc.extract_features()
+		#print doc.number_comas
+		#pass
+		self.test_data = []
+		self.test_data.append(float(sum(doc.number_comas))/float(len(doc.number_comas)))
+		self.test_data.append(float(sum(doc.number_semicolans))/float(len(doc.number_semicolans)))
+		self.test_data.append(float(sum(doc.number_quotations))/float(len(doc.number_quotations)))
+		self.test_data.append(float(sum(doc.number_exclamations))/float(len(doc.number_exclamations)))
+		self.test_data.append(float(sum(doc.number_hyphens))/float(len(doc.number_hyphens)))
+		self.test_data.append(float(sum(doc.number_ands))/float(len(doc.number_ands)))
+		self.test_data.append(float(sum(doc.number_buts))/float(len(doc.number_buts)))
+		self.test_data.append(float(sum(doc.number_howevers))/float(len(doc.number_howevers)))
+		self.test_data.append(float(sum(doc.number_ifs))/float(len(doc.number_ifs)))
 
-	def start_testing(self) :
+		self.test_data.append(float(sum(doc.number_thats))/float(len(doc.number_thats)))
+		self.test_data.append(float(sum(doc.number_mores))/float(len(doc.number_mores)))
+		self.test_data.append(float(sum(doc.number_musts))/float(len(doc.number_musts)))
+		self.test_data.append(float(sum(doc.number_mights))/float(len(doc.number_mights)))
+		self.test_data.append(float(sum(doc.number_thiss))/float(len(doc.number_thiss)))
+		self.test_data.append(float(sum(doc.number_verys))/float(len(doc.number_verys)))
+		self.test_data.append(doc.mean_word_length)
+		self.test_data.append(doc.mean_sentence_length)
+
+		self.test_data.append(doc.standard_deviation_sentence)
+		docs = []
+		docs.append(self.author_list[self.author1Choices.GetSelection()]+".csv")
+		docs.append(self.author_list[self.author2Choices.GetSelection()]+".csv")
+
+		y = []
+		noa = 0
+		author_names = []
+		train_data = []
+		author_files = os.listdir(path+"/generated_files")
+		#print author_names
+		for author in docs :
+			author_names.append(author[:-4])
+			text1 = open(path+"/generated_files/"+author,"r").read().split("\n")
+			#print text1[1:-1]
+			for txt in text1[1:-1] :
+				t = []
+				y.append(noa)
+				#t.append(self.noa) 
+				for i in txt.split(",")[1:-1] :
+					t.append(float(i))
+				train_data.append(t)
+			noa += 1
+		clfr1 = LinearSVC()
+		clfr1.fit(train_data,y)
+		auth_name = author_names[clfr1.predict(self.test_data)[0]]
+
+		box=wx.MessageDialog(None,"Author of the document is '"+auth_name+"'.",'Alert',wx.OK)
+		answer=box.ShowModal()
+		box.Destroy()
+
+		
+
+	def start_all_testing(self) :
 		doc = features(self.testing_novel[1][1],'unknown',self.testing_novel[1][0])
 		doc.extract_features()
 		#print doc.number_comas
@@ -1110,7 +1179,7 @@ def main() :
 	app.MainLoop()
 
 
-
+																																					
 
 if __name__ == '__main__' :
-	main()	
+	main()
