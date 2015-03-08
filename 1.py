@@ -1,4 +1,7 @@
 from sklearn.svm import LinearSVC
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
+import numpy as np
 import wx
 import os
 import sys
@@ -126,7 +129,7 @@ class training_window(wx.Frame) :
 		self.novel_list=[]
 		self.numberOfAuthors=0
 		self.authors=[]
-		wx.Frame.__init__(self,parent,id,'Training..!!!!!',size=(600,600),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
+		wx.Frame.__init__(self,parent,id,'Training..!!!!!',size=(600,620),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
 		self.panel=wx.Panel(self)
 		self.panel.SetBackgroundColour(wx.Colour(220,220,250))
 		font1 = wx.Font(10, wx.DEFAULT, wx.NORMAL,wx.FONTWEIGHT_NORMAL)
@@ -149,8 +152,13 @@ class training_window(wx.Frame) :
 		extract_features_button=wx.Button(self.panel,label="Extract Features",pos=(80,500),size=(200,40))
 		extract_features_button.SetFont(font1)
 		self.Bind(wx.EVT_BUTTON, self.start_extract_features_dialog, extract_features_button)
-		start_training_button=wx.Button(self.panel,label="Start Training",pos=(300,500),size=(200,40))
+		#start_training_button=wx.Button(self.panel,label="Start Training",pos=(300,500),size=(200,40))
+		#start_training_button.SetFont(font1)
+		start_training_button=wx.Button(self.panel,label="Start Training",pos=(190,560),size=(220,40))
 		start_training_button.SetFont(font1)
+		feature_analysis_button=wx.Button(self.panel,label="Show Feature Analysis",pos=(300,500),size=(220,40))
+		feature_analysis_button.SetFont(font1)
+		self.Bind(wx.EVT_BUTTON, self.show_feature_analysis_window, feature_analysis_button)
 		self.Bind(wx.EVT_BUTTON, self.start_training, start_training_button)
 		self.numberAuthors=wx.StaticText(self.panel,-1,"Number Of Authors Selected : "+str(self.numberOfAuthors),(120,30),(360,-1),wx.ALIGN_CENTER)
 		font = wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.BOLD)
@@ -165,8 +173,15 @@ class training_window(wx.Frame) :
 		#print file1
 		text1 = open(file1,"r").read()
 		#print text1
-		self.novelPrev.SetValue(text1)			
+		self.novelPrev.SetValue(text1)	
 		self.Refresh()
+
+
+
+	def show_feature_analysis_window(self,event) :
+		self.features_analysis_frame=feature_analysis_window(parent=None,id=1)
+		self.features_analysis_frame.Show()
+
 
 	def show_features_window(self) :
 		global author_list
@@ -460,6 +475,141 @@ class training_window(wx.Frame) :
 			except :
 				pass
 
+
+
+
+
+
+
+class feature_analysis_window(wx.Frame) :
+	def __init__(self,parent,id) :
+		self.author_list = []
+		self.feature_name_list = []
+
+		self.draw_graph = DrawGraph()
+		
+		docs = os.listdir(path+"/generated_files/")
+
+		for doc in docs :
+			self.author_list.append(doc[:-4])
+		feats = open(path+"/generated_files/"+docs[0],"r").read().split("\n")[0].split(",")
+		self.feature_name_list = feats[1:]
+		self.feature_list = []
+
+		for doc in docs :
+			t = []
+			feats = open(path+"/generated_files/"+doc,"r").read().split("\n")
+			for feat in feats[1:-1] :
+				tt = []
+				feat = feat.split(",")
+				for f in feat [1:-1] :
+					tt.append(float(f))
+				t.append(tt)
+			
+			self.feature_list.append(t)
+
+		#print self.feature_list[0]
+
+
+
+		
+		wx.Frame.__init__(self,parent,id,'Features Analysis',size=(600,600),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
+		self.panel=wx.Panel(self)
+		self.panel.SetBackgroundColour(wx.Colour(220,220,250))
+		font1 = wx.Font(10, wx.DEFAULT, wx.NORMAL,wx.FONTWEIGHT_NORMAL)
+		font1.SetPointSize(10)
+		font2 = wx.Font(10, wx.DEFAULT, wx.NORMAL,wx.FONTWEIGHT_NORMAL)
+		font2.SetPointSize(12)
+		self.Bind(wx.EVT_CLOSE, self.close_all)
+
+		self.type1=wx.RadioButton(self.panel, -1, 'Single Author VS documents feature analysis',pos=(120,20), style=wx.RB_GROUP)
+		self.type1.SetFont(font1)
+		self.type2=wx.RadioButton(self.panel, -1, 'Multiple authors feature analysis',pos=(120,55))
+		self.type2.SetFont(font1)
+		self.Bind(wx.EVT_RADIOBUTTON, self.disable_author_choices, self.type2)
+		self.Bind(wx.EVT_RADIOBUTTON, self.enable_author_choices, self.type1)
+		self.authorNameText=wx.StaticText(self.panel,-1,"Author Name\t : ",pos=(50,105))
+		self.authorNameText.SetFont(font2)
+		self.authorNameChoices=wx.Choice(self.panel,-1,pos=(185,105),size=(290,30),choices=self.author_list)
+		self.authorNameChoices.SetSelection(0)
+		self.featureNameText=wx.StaticText(self.panel,-1,"Feature Name\t : ",pos=(50,145))
+		self.featureNameText.SetFont(font2)
+		self.featureNameChoices=wx.Choice(self.panel,-1,pos=(185,145),size=(290,30),choices=self.feature_name_list)
+		self.featureNameChoices.SetSelection(0)
+
+		self.Bind(wx.EVT_CHOICE, self.draw_new_graph, self.authorNameChoices)
+		self.Bind(wx.EVT_CHOICE, self.draw_new_graph, self.featureNameChoices)
+
+
+		tt = self.feature_list[self.authorNameChoices.GetSelection()]
+		tt = np.array(tt)
+		y_data = tt.T[self.featureNameChoices.GetSelection()]
+		x_data = []
+		t = 1
+		for i in y_data :
+			x_data.append(t)
+			t+=1
+
+		self.draw_graph.draw_single_graph(x_data,y_data,'Books','feature_value',self.feature_name_list[self.featureNameChoices.GetSelection()])
+
+		png = wx.Image(path+"/temp_img.png",wx.BITMAP_TYPE_ANY)
+		png = png.Scale(400,300,wx.IMAGE_QUALITY_HIGH)
+		png = png.ConvertToBitmap()
+		self.graph_img = wx.StaticBitmap(self.panel,-1,png,(100,200),(png.GetWidth(),png.GetHeight()))
+
+		self.graph_img.Bind(wx.EVT_LEFT_DOWN, self.show_graph_photo_viewer)
+
+		save_features_button = wx.Button(self.panel,label="Save Graphs as PDF",pos=(180,530),size=(250,40))
+		save_features_button.SetFont(font2)
+
+
+	def show_graph_photo_viewer(self,event) :
+		os.system("gnome-open "+path+"/temp_img.png")
+
+	
+	def draw_new_graph(self,event) :
+		#self.draw_graph()
+		if True :
+			tt = self.feature_list[self.authorNameChoices.GetSelection()]
+			tt = np.array(tt)
+			y_data = tt.T[self.featureNameChoices.GetSelection()]
+			x_data = []
+			t = 1
+			for i in y_data :
+				x_data.append(t)
+				t+=1
+
+			self.draw_graph.draw_single_graph(x_data,y_data,'Books','feature_value',self.feature_name_list[self.featureNameChoices.GetSelection()])
+			png = wx.Image(path+"/temp_img.png",wx.BITMAP_TYPE_ANY)
+			png = png.Scale(400,300,wx.IMAGE_QUALITY_HIGH)
+			png = png.ConvertToBitmap()
+			self.graph_img.SetBitmap(png)
+
+
+
+
+
+			
+
+	
+
+
+	def disable_author_choices(self,event) :
+		self.authorNameChoices.Disable()
+
+
+
+	def enable_author_choices(self,event) :
+		self.authorNameChoices.Enable()
+
+
+
+
+	def close_all(self,event) :
+		try :
+			self.Destroy()
+		except :
+			pass
 
 
 
@@ -1148,6 +1298,28 @@ class features() :
 		#print self.full_features
 		print "Features of ",self.docname," is extracted."
 		#self.create_csv_file()
+
+
+
+
+
+class DrawGraph() :
+	def __init__(self) :
+		pass
+
+	def draw_single_graph(self,x_data,y_data,x_label,y_label,title) :
+		try :
+			plt.close()
+		except :
+			pass
+		fig = plt.figure()
+		axis = fig.add_subplot(111)
+		axis.set_title(title)
+		axis.set_xlabel(x_label)
+		axis.set_ylabel(y_label)
+		axis.grid(True)
+		plt.plot(x_data,y_data,marker='*')
+		plt.savefig('temp_img.png')
 
 
 
