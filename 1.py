@@ -526,7 +526,7 @@ class feature_analysis_window(wx.Frame) :
 		self.type1.SetFont(font1)
 		self.type2=wx.RadioButton(self.panel, -1, 'Multiple authors feature analysis',pos=(120,55))
 		self.type2.SetFont(font1)
-		self.Bind(wx.EVT_RADIOBUTTON, self.disable_author_choices, self.type2)
+		self.Bind(wx.EVT_RADIOBUTTON, self.draw_new_graph, self.type2)
 		self.Bind(wx.EVT_RADIOBUTTON, self.enable_author_choices, self.type1)
 		self.authorNameText=wx.StaticText(self.panel,-1,"Author Name\t : ",pos=(50,105))
 		self.authorNameText.SetFont(font2)
@@ -569,7 +569,7 @@ class feature_analysis_window(wx.Frame) :
 	
 	def draw_new_graph(self,event) :
 		#self.draw_graph()
-		if True :
+		if self.type1.GetValue() :
 			tt = self.feature_list[self.authorNameChoices.GetSelection()]
 			tt = np.array(tt)
 			y_data = tt.T[self.featureNameChoices.GetSelection()]
@@ -585,6 +585,24 @@ class feature_analysis_window(wx.Frame) :
 			png = png.ConvertToBitmap()
 			self.graph_img.SetBitmap(png)
 
+		elif self.type2.GetValue() :
+			self.disable_author_choices()
+			tt = self.feature_list
+			tt = np.array(tt)
+			y_data = []
+			x_data = []
+			ttt = 1
+			for t in tt :
+				t = np.array(t)
+				y_data.append(float(sum(t.T[self.featureNameChoices.GetSelection()]))/float(len(t.T[self.featureNameChoices.GetSelection()])))
+				x_data.append(ttt)
+				ttt += 1
+			self.draw_graph.draw_single_graph(x_data,y_data,'Authors','feature_value',self.feature_name_list[self.featureNameChoices.GetSelection()])
+			png = wx.Image(path+"/temp_img.png",wx.BITMAP_TYPE_ANY)
+			png = png.Scale(400,300,wx.IMAGE_QUALITY_HIGH)
+			png = png.ConvertToBitmap()
+			self.graph_img.SetBitmap(png)
+
 
 
 
@@ -594,7 +612,7 @@ class feature_analysis_window(wx.Frame) :
 	
 
 
-	def disable_author_choices(self,event) :
+	def disable_author_choices(self) :
 		self.authorNameChoices.Disable()
 
 
