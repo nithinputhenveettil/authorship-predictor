@@ -323,7 +323,7 @@ class training_window(wx.Frame) :
 			open_dlg.Destroy()
 			self.new_author=[]
 			novels=""
-			novels+=open_dlg.GetDir0ectory()
+			novels+=open_dlg.GetDirectory()
 			self.new_author.append(open_dlg.GetDirectory())
 			for i in range(len(open_dlg.GetFilenames())) :
 				novels+=open_dlg.GetFilenames()[i]
