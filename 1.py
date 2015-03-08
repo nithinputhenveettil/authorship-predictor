@@ -1409,7 +1409,7 @@ class DrawGraph() :
 		axis.set_ylabel(y_label)
 		axis.grid(True)
 		plt.xticks(x_data)
-		plt.plot(x_data,y_data,marker='*')
+		plt.plot(x_data,y_data,marker='*',c = 'red')
 		plt.savefig('temp_img.png')
 
 	def save_set_of_graphs(self,graph_data) :
@@ -1429,7 +1429,7 @@ class DrawGraph() :
 				axis.set_ylabel(data[3])
 				axis.grid(True)
 				plt.xticks(data[0])
-				plt.plot(data[0],data[1],marker='*')
+				plt.plot(data[0],data[1],marker='*',c = 'red')
 				pp.savefig(fig)
 		pp.close()
 
