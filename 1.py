@@ -25,11 +25,11 @@ class main_window(wx.Frame) :
 		panel.SetBackgroundColour(wx.Colour(220,220,250))
 		font = wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.FONTWEIGHT_NORMAL)
 		font.SetPointSize(20)
-		training_button=wx.Button(panel,label="Training",pos=(90,120),size=(300,100))
+		training_button=wx.Button(panel,label="Training",pos=(90,130),size=(300,100))
 		training_button.SetBackgroundColour(wx.Colour(200,250,200))
 		training_button.SetFont(font)
 		self.Bind(wx.EVT_BUTTON, self.show_training_window, training_button)
-		testing_button=wx.Button(panel,label="Testing",pos=(90,250),size=(300,100))
+		testing_button=wx.Button(panel,label="Testing",pos=(90,280),size=(300,100))
 		testing_button.SetBackgroundColour(wx.Colour(200,250,200))
 		testing_button.SetFont(font)
 		self.Bind(wx.EVT_BUTTON, self.show_testing_window, testing_button)
@@ -69,6 +69,10 @@ class main_window(wx.Frame) :
 		appname=wx.StaticText(panel,-1,"Authorship Predictor",(10,30),(460,-1),wx.ALIGN_CENTER)
 		appname.SetFont(font)
 		appname.SetForegroundColour(wx.Colour(250,100,150))
+		appname.SetFont(font)
+		#appname=wx.StaticText(panel,-1,"----------------------------",(10,80),(360,-1),wx.ALIGN_CENTER)
+		appname.SetFont(font)
+		
 		self.Centre()
 
 
@@ -96,23 +100,24 @@ class main_window(wx.Frame) :
 
 class about_window(wx.Frame) :
 	def __init__(self,parent,id) :
-		wx.Frame.__init__(self,parent,id,'About',size=(400,400),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
+		wx.Frame.__init__(self,parent,id,'About',size=(400,350),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
 		font = wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.BOLD)
 		panel1=wx.Panel(self)
+		panel1.SetBackgroundColour(wx.Colour(220,220,250))
 		font.SetPointSize(30)
-		appname=wx.StaticText(panel1,-1,"About",(10,30),(360,-1),wx.ALIGN_CENTER)
+		appname=wx.StaticText(panel1,-1,"About",(110,30),(360,-1),wx.ALIGN_CENTER)
 		appname.SetFont(font)
 		appname.SetForegroundColour('blue')
 		font = wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.BOLD)
 		font.SetPointSize(10)
-		appname=wx.StaticText(panel1,-1,"Automatic Authorship Predictor Version : 1.0.0.1",(10,100),(360,-1),wx.ALIGN_CENTER)
+		appname=wx.StaticText(panel1,-1,"Automatic Authorship Predictor Version : 1.0.0.1",(15,100),(360,-1),wx.ALIGN_CENTER)
 		appname.SetFont(font)
 		font.SetPointSize(15)
 		appname.SetForegroundColour('red')
-		appname=wx.StaticText(panel1,-1,"Authors",(10,140),(360,-1),wx.ALIGN_CENTER)
+		appname=wx.StaticText(panel1,-1,"Authors",(150,140),(360,-1),wx.ALIGN_CENTER)
 		appname.SetFont(font)
-		appname=wx.StaticText(panel1,-1,"---------------------",(10,165),(360,-1),wx.ALIGN_CENTER)
-		appname=wx.StaticText(panel1,-1,"Anjana.R\nDeepika.M\nNithin.P\nPanchami Raj.B\nRanjana.V",(10,190),(360,-1),wx.ALIGN_CENTER)
+		appname=wx.StaticText(panel1,-1,"---------------------",(150,165),(360,-1),wx.ALIGN_CENTER)
+		appname=wx.StaticText(panel1,-1,"Anjana.R\nDeepika.M\nNithin.P\nPanchami Raj.B\nRanjana.V",(110,190),(360,-1),wx.ALIGN_CENTER)
 		appname.SetFont(font)
 
 
@@ -1410,7 +1415,7 @@ class DrawGraph() :
 		axis.grid(True)
 		plt.xticks(x_data)
 		plt.plot(x_data,y_data,marker='*',c = 'red')
-		plt.savefig('temp_img.png')
+		plt.savefig(path+'/temp_img.png')
 
 	def save_set_of_graphs(self,graph_data) :
 		#pp = PdfPages(graph_data[0]+'.pdf')
