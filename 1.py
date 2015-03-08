@@ -179,8 +179,14 @@ class training_window(wx.Frame) :
 
 
 	def show_feature_analysis_window(self,event) :
-		self.features_analysis_frame=feature_analysis_window(parent=None,id=1)
-		self.features_analysis_frame.Show()
+		try :
+			tmp = os.listdir(path+'/generated_files')[0]
+			self.features_analysis_frame=feature_analysis_window(parent=None,id=1)
+			self.features_analysis_frame.Show()
+		except :
+			box=wx.MessageDialog(None,"Please extract features first.",'Alert',wx.OK)
+			answer=box.ShowModal()
+			box.Destroy()
 
 
 	def show_features_window(self) :
@@ -562,6 +568,70 @@ class feature_analysis_window(wx.Frame) :
 		save_features_button = wx.Button(self.panel,label="Save Graphs as PDF",pos=(180,530),size=(250,40))
 		save_features_button.SetFont(font2)
 
+		self.Bind(wx.EVT_BUTTON, self.save_graph_as_a_file, save_features_button)
+
+
+	def save_graph_as_a_file(self,event) :
+		graph_data = []
+		if self.type1.GetValue() :
+			graph_data.append(True)
+			graph_data.append(path+"/graph_analysis1")
+			tmp = []
+			temp2 = 0
+			for tt in self.feature_list :
+				
+				tt = np.array(tt)
+				temp1 = 0
+				for t in tt.T :
+					y_data = t
+					x_data = []
+					ttt = 1
+					for i in y_data :
+						x_data.append(ttt)
+						ttt+=1
+					#print self.feature_name_list[temp]
+					tmp.append([x_data,y_data, 'Books of '+self.author_list[temp2],'features value',self.author_list[temp2]+"'s "+self.feature_name_list[temp1]])
+					temp1+=1
+				temp2+=1
+			graph_data.append(tmp)
+			#print graph_data[2][0]
+			self.draw_graph.save_set_of_graphs(graph_data)
+			#os.system("gnome-open graph_analysis1.pdf")
+
+			box=wx.MessageDialog(None,"Graphs saved to file named 'graph_analysis1.pdf'..! Open it now.?",'Alert',wx.YES_NO)
+			answer=box.ShowModal()
+			box.Destroy()
+			if answer==wx.ID_YES :
+				os.system("gnome-open "+path+"/graph_analysis1.pdf")
+
+
+
+		elif self.type2.GetValue() :
+			graph_data.append(True)
+			graph_data.append(path+"/graph_analysis2")
+			tmp = []
+			for i in range(len(self.feature_name_list))  :
+				ttt = 1
+				y_data = []
+				x_data = []
+				for t in self.feature_list :
+					t = np.array(t)
+					y_data.append(float(sum(t.T[i]))/float(len(t.T[i])))
+					x_data.append(ttt)
+					ttt+=1
+				tmp.append([x_data,y_data,'Authors','feature value',self.feature_name_list[i] + " of authors"])
+					
+			graph_data.append(tmp)
+			#print graph_data[2][0]
+			self.draw_graph.save_set_of_graphs(graph_data)
+			#os.system("gnome-open graph_analysis2.pdf")
+			box=wx.MessageDialog(None,"Graphs saved to file named 'graph_analysis2.pdf'..! Open it now.?",'Alert',wx.YES_NO)
+			answer=box.ShowModal()
+			box.Destroy()
+			if answer==wx.ID_YES :
+				os.system("gnome-open "+path+"/graph_analysis2.pdf")
+				
+	
 
 	def show_graph_photo_viewer(self,event) :
 		os.system("gnome-open "+path+"/temp_img.png")
@@ -1341,6 +1411,28 @@ class DrawGraph() :
 		plt.xticks(x_data)
 		plt.plot(x_data,y_data,marker='*')
 		plt.savefig('temp_img.png')
+
+	def save_set_of_graphs(self,graph_data) :
+		#pp = PdfPages(graph_data[0]+'.pdf')
+		if graph_data[0] :
+			pp = PdfPages(graph_data[1]+'.pdf')
+			for data in graph_data[2] :
+				try :
+					plt.close()
+				except :
+					pass
+				
+				fig = plt.figure()
+				axis = fig.add_subplot(111)
+				axis.set_title(data[4])
+				axis.set_xlabel(data[2])
+				axis.set_ylabel(data[3])
+				axis.grid(True)
+				plt.xticks(data[0])
+				plt.plot(data[0],data[1],marker='*')
+				pp.savefig(fig)
+		pp.close()
+
 
 
 
