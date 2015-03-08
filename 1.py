@@ -204,7 +204,7 @@ class training_window(wx.Frame) :
 			author_list = self.author_list
 			novel_list = self.novel_list
 			docss = self.docs
-			self.show_features_frame=self.training_window1(parent=None,id=1)
+			self.show_features_frame=self.features_window(parent=None,id=1)
 			self.show_features_frame.Show()
 			#self.show_features_frame.Bind(wx.EVT_CLOSE, self.add_new_author,self.new_author_frame)
 
@@ -362,7 +362,7 @@ class training_window(wx.Frame) :
 
 
 
-	class training_window1(wx.Frame) :
+	class features_window(wx.Frame) :
 		global docss
 		global author_list
 		global novel_list
