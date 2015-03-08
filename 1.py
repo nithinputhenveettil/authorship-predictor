@@ -527,7 +527,7 @@ class feature_analysis_window(wx.Frame) :
 		self.type2=wx.RadioButton(self.panel, -1, 'Multiple authors feature analysis',pos=(120,55))
 		self.type2.SetFont(font1)
 		self.Bind(wx.EVT_RADIOBUTTON, self.draw_new_graph, self.type2)
-		self.Bind(wx.EVT_RADIOBUTTON, self.enable_author_choices, self.type1)
+		self.Bind(wx.EVT_RADIOBUTTON, self.draw_new_graph, self.type1)
 		self.authorNameText=wx.StaticText(self.panel,-1,"Author Name\t : ",pos=(50,105))
 		self.authorNameText.SetFont(font2)
 		self.authorNameChoices=wx.Choice(self.panel,-1,pos=(185,105),size=(290,30),choices=self.author_list)
@@ -570,6 +570,7 @@ class feature_analysis_window(wx.Frame) :
 	def draw_new_graph(self,event) :
 		#self.draw_graph()
 		if self.type1.GetValue() :
+			self.enable_author_choices()
 			tt = self.feature_list[self.authorNameChoices.GetSelection()]
 			tt = np.array(tt)
 			y_data = tt.T[self.featureNameChoices.GetSelection()]
@@ -597,6 +598,7 @@ class feature_analysis_window(wx.Frame) :
 				y_data.append(float(sum(t.T[self.featureNameChoices.GetSelection()]))/float(len(t.T[self.featureNameChoices.GetSelection()])))
 				x_data.append(ttt)
 				ttt += 1
+			#print x_data
 			self.draw_graph.draw_single_graph(x_data,y_data,'Authors','feature_value',self.feature_name_list[self.featureNameChoices.GetSelection()])
 			png = wx.Image(path+"/temp_img.png",wx.BITMAP_TYPE_ANY)
 			png = png.Scale(400,300,wx.IMAGE_QUALITY_HIGH)
@@ -617,7 +619,7 @@ class feature_analysis_window(wx.Frame) :
 
 
 
-	def enable_author_choices(self,event) :
+	def enable_author_choices(self) :
 		self.authorNameChoices.Enable()
 
 
@@ -1336,6 +1338,7 @@ class DrawGraph() :
 		axis.set_xlabel(x_label)
 		axis.set_ylabel(y_label)
 		axis.grid(True)
+		plt.xticks(x_data)
 		plt.plot(x_data,y_data,marker='*')
 		plt.savefig('temp_img.png')
 
