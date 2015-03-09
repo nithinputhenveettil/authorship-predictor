@@ -18,9 +18,10 @@ path = os.path.dirname(os.path.realpath(sys.argv[0]))
 
 
 
+
 class main_window(wx.Frame) :
 	def __init__(self,parent,id) :
-		wx.Frame.__init__(self,parent,id,'',size=(500,500),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
+		wx.Frame.__init__(self,parent,id,'Authorship Predictor',size=(500,500),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
 		panel=wx.Panel(self,-1)
 		panel.SetBackgroundColour(wx.Colour(220,220,250))
 		font = wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.FONTWEIGHT_NORMAL)
@@ -72,7 +73,6 @@ class main_window(wx.Frame) :
 		appname.SetFont(font)
 		#appname=wx.StaticText(panel,-1,"----------------------------",(10,80),(360,-1),wx.ALIGN_CENTER)
 		appname.SetFont(font)
-		
 		self.Centre()
 
 
@@ -134,7 +134,7 @@ class training_window(wx.Frame) :
 		self.novel_list=[]
 		self.numberOfAuthors=0
 		self.authors=[]
-		wx.Frame.__init__(self,parent,id,'Training..!!!!!',size=(600,620),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
+		wx.Frame.__init__(self,parent,id,'Training',size=(600,620),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
 		self.panel=wx.Panel(self)
 		self.panel.SetBackgroundColour(wx.Colour(220,220,250))
 		font1 = wx.Font(10, wx.DEFAULT, wx.NORMAL,wx.FONTWEIGHT_NORMAL)
@@ -273,7 +273,7 @@ class training_window(wx.Frame) :
 			answer=box.ShowModal()
 			box.Destroy()
 			if answer==wx.ID_YES :
-				print "Training Started"
+				#print "Training Started"
 				## Place to call the start trainin Function!!!!!!!
 				global tr
 				tr = TrainingTesting()
@@ -302,7 +302,7 @@ class training_window(wx.Frame) :
 			#print "haiiii"
 			if answer==wx.ID_YES :
 				#pass
-				print "Feature extraction Started with data!!!!","\n",self.authors
+				#print "Feature extraction Started with data!!!!","\n",self.authors
 				## Place to call the feature extraction Function!!!!!!!
 				#box=wx.MessageDialog(None,"Feature extraction Started!!!",'Alert',wx.OK)
 				#answer=box.ShowModal()
@@ -393,7 +393,7 @@ class training_window(wx.Frame) :
 				j = self.novel_list[i].index(doc.docname)
 				self.features_list[i][j] = doc.full_features
 
-			wx.Frame.__init__(self,parent,id,'Training..!!!!!',size=(600,450),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
+			wx.Frame.__init__(self,parent,id,'Feature Extraction',size=(600,450),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
 			self.panel=wx.Panel(self)
 			self.panel.SetBackgroundColour(wx.Colour(220,220,250))
 			font1 = wx.Font(10, wx.DEFAULT, wx.NORMAL,wx.FONTWEIGHT_NORMAL)
@@ -453,7 +453,7 @@ class training_window(wx.Frame) :
 				answer=box.ShowModal()
 				box.Destroy()
 				if answer==wx.ID_YES :
-					print "Training Started"
+					#print "Training Started"
 					## Place to call the start trainin Function!!!!!!!
 					global tr
 					tr = TrainingTesting()
@@ -729,7 +729,7 @@ class testing_window(wx.Frame) :
 
 		self.testing_novel=[]
 		self.novel1=[]
-		wx.Frame.__init__(self,parent,id,'Testing..!!!!!',size=(480,400),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
+		wx.Frame.__init__(self,parent,id,'Testing',size=(480,400),style=wx.DEFAULT_FRAME_STYLE^wx.RESIZE_BORDER^wx.MAXIMIZE_BOX)
 		panel = wx.Panel(self)
 		panel.SetBackgroundColour(wx.Colour(220,220,250))
 		font = wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.FONTWEIGHT_NORMAL)
@@ -780,7 +780,7 @@ class testing_window(wx.Frame) :
 				self.testing_novel=[]
 				self.testing_novel.append(self.test2.GetValue())
 				self.testing_novel.append(self.novel1)
-				print "Testing Started with data!!!!","\n",self.testing_novel
+				#print "Testing Started with data!!!!","\n",self.testing_novel
 				## Place to call the testing Function!!!!!!!
 				"""box=wx.MessageDialog(None,"Test Started!!!",'Alert',wx.OK)
 				answer=box.ShowModal()
@@ -930,8 +930,9 @@ class features() :
 		self.tokenized_data = nltk.tokenize.word_tokenize(self.data)
 
 	def print_content(self) :
-		print self.tokenized_data
+		#print self.tokenized_data
 		#print self.data
+		pass
 
 	def output_features(self) :
 		file1 = open("./output/"+self.name,"w")
@@ -1391,7 +1392,7 @@ class features() :
 		self.full_features += str(self.standard_deviation_sentence)
 		self.full_features += "\n\n"
 		#print self.full_features
-		print "Features of ",self.docname," is extracted."
+		#print "Features of ",self.docname," is extracted."
 		#self.create_csv_file()
 
 
