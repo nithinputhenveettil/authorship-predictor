@@ -1,6 +1,6 @@
 from sklearn.svm import LinearSVC
-import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+import matplotlib.pyplot as plt
 import numpy as np
 import wx
 import os
