@@ -934,48 +934,6 @@ class features() :
 		#print self.data
 		pass
 
-	def output_features(self) :
-		file1 = open("./output/"+self.name,"w")
-		file1.writelines("----Features-----\n\n")
-		file1.writelines("\nNumber of comas per thousand tokens = ")
-		file1.writelines(str(self.number_comas))
-		file1.writelines("\nNumber of semicolons per thousand tokens = ")
-		file1.writelines(str(self.number_semicolans))
-		file1.writelines("\nNumber of quotations per thousand tokens = ")
-		file1.writelines(str(self.number_quotations))
-		file1.writelines("\nNumber of exclamations per thousand tokens = ")
-		file1.writelines(str(self.number_exclamations))
-		file1.writelines("\nNumber of hyphens per thousand tokens = ")
-		file1.writelines(str(self.number_hyphens))
-		file1.writelines("\nNumber of ands per thousand tokens = ")
-		file1.writelines(str(self.number_ands))
-		file1.writelines("\nNumber of buts per thousand tokens = ")
-		file1.writelines(str(self.number_buts))
-		file1.writelines("\nNumber of howevers per thousand tokens = ")
-		file1.writelines(str(self.number_howevers))
-		file1.writelines("\nNumber of ifs per thousand tokens = ")
-		file1.writelines(str(self.number_ifs))
-		file1.writelines("\nNumber of thats per thousand tokens = ")
-		file1.writelines(str(self.number_thats))
-		file1.writelines("\nNumber of mores per thousand tokens = ")
-		file1.writelines(str(self.number_mores))
-		file1.writelines("\nNumber of musts per thousand tokens = ")
-		file1.writelines(str(self.number_musts))
-		file1.writelines("\nNumber of mights per thousand tokens = ")
-		file1.writelines(str(self.number_mights))
-		file1.writelines("\nNumber of thiss per thousand tokens = ")
-		file1.writelines(str(self.number_thiss))
-		file1.writelines("\nNumber of verys per thousand tokens =")
-		file1.writelines(str(self.number_verys))
-		file1.writelines("\n\nMean Word Length = ")
-		file1.writelines(str(self.mean_word_length))
-		file1.writelines("\nMean Sentence Length = ")
-		file1.writelines(str(self.mean_sentence_length))
-		file1.writelines("\nStandard deviation of Sentence Length = ")
-		file1.writelines(str(self.standard_deviation_sentence))
-		file1.writelines("\n\nType Token Ratio \n------------------------\n")
-		for i in self.type_token_ratio :
-			file1.writelines(str(i)+"\n")
 
 	def create_csv_file(self) :
 		global path
@@ -1295,47 +1253,6 @@ class features() :
 		self.full_features += "\n\n"
 		#print self.number_verys
 
-		## Type-Token Ratio
-		data = list(self.tokenized_data)
-		stem = nltk.stem.porter.PorterStemmer()
-		rmve = []
-		for i in range(len(data)) :
-			try :
-				data[i] = stem.stem(data[i])
-			except :
-				rmve.append(i)
-				continue
-		for i in rmve :
-			data.remove(data[i])
-		self.type_token_ratio = []
-		for i in range(len(data)) :
-			found = False
-			for j in range(len(self.type_token_ratio)) :
-				if self.type_token_ratio[j][1] == data[i] :
-					found = True
-					break;
-			if found :
-				found=False
-				self.type_token_ratio[j][0]+=1
-				continue
-			else :
-				self.type_token_ratio.append([1,data[i]])
-		self.type_token_ratio.sort(reverse=True)
-		for token in self.type_token_ratio :
-			if len(token[1]) == 1 :
-				if token[1] == 'i' or token[1] == 'a' :
-					pass
-				else :
-					self.type_token_ratio.remove(token)
-			elif token[1][:1].isalpha() == False :
-				self.type_token_ratio.remove(token)
-			else :
-				pass
-		self.full_features += "\n--Type-Token Ratio--\n"
-		for i in self.type_token_ratio :
-			self.full_features += str(i)
-			self.full_features += "\n"
-		self.full_features += "\n\n"
 
 		## Mean word length
 		data = str(self.data)
