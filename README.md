@@ -3,7 +3,8 @@
   This system is developed as a part of academic main project. This system can be used to predict the
 authorship of an unknown document. You need to train the system before the prediction. Training means 
 you need to give author names and some books of the author to the system. We got 80.95% output in overall 
-testing and 92% result in Binary testing.
+testing and 92% result in Binary testing. A video demonstration of working can be seen in this 
+<a href="https://youtu.be/uDNAPe6SDpc">Working video</a>.
   System is fully written in python. You need some extra python modules to make the system work. You
 can find the detailed instructions to  install these modules under the 'Installation instructions' sub-
 heading.
