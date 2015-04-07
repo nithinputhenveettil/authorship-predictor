@@ -27,28 +27,38 @@ the written permission from the authors is strictly illegal.
 Type the following command in the terminal to install the following:
 
 • Python 
+
 	user@system :~$ sudo apt-get install python
 
 • WXPython installation
+
 	user@system :~$ sudo apt-get install python
 
 • nltk toolkit installation 
+
 	user@system :~$ sudo apt-get install python-nltk
 
 • numpy installation
+
 	user@system :~$ sudo apt-get install python-numpy
 
 • matplotlib installation
+
 	user@system :~$ sudo apt-get install python-matplotlib
 
 • scikit-learn installation
+
 	--> Download source of scikit-learn source from the following link.
+	
              https://github.com/scikit-learn/scikit-learn
+             
         --> Extract it to home folder.
         --> Open terminal.
+        
 		user@system :~$ cd ~/sklearn/
 		user@system :~$ python setup.py build
 		user@system :~$ python setup.py install
+		
 
                                       
 
