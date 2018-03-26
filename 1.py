@@ -9,6 +9,9 @@ import nltk
 import math
 import copy
 
+reload(sys)  
+sys.setdefaultencoding('latin-1')
+
 tr = []
 new_autho = []
 docss = []
@@ -850,7 +853,7 @@ class testing_window(wx.Frame) :
 			noa += 1
 		clfr1 = LinearSVC()
 		clfr1.fit(train_data,y)
-		auth_name = author_names[clfr1.predict(self.test_data)[0]]
+		auth_name = author_names[clfr1.predict(np.array(self.test_data).reshape(1,-1))[0]]
 
 		box=wx.MessageDialog(None,"Author of the document is '"+auth_name+"'.",'message',wx.OK)
 		answer=box.ShowModal()
@@ -1386,7 +1389,7 @@ class TrainingTesting() :
 		self.clfr.fit(self.train_data,self.y)
 		#print self.author_names[clfr.predict(self.train_data[0])[0]]
 	def test(self,test_data) :
-		self.correct_author_name = self.author_names[self.clfr.predict(test_data)[0]]
+		self.correct_author_name = self.author_names[self.clfr.predict(np.array(test_data).reshape(1,-1))[0]]
 
 
 
